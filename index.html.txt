@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator Grătar - Editabil</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .input-group input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Modificări pentru aliniere stânga-dreapta */
+        .tables-grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Două coloane egale */
+            gap: 30px; /* Spațiu între coloane și rânduri */
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 992px) { /* Punct de rupere pentru ecrane mai mici */
+            .tables-grid-container {
+                grid-template-columns: 1fr; /* O singură coloană pe ecrane mici */
+            }
+        }
+
+        .table-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* Umbră ușoară pentru fiecare tabel */
+        }
+
+        .table-section h3 {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+            font-size: 1.3em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px; /* Spațiu sub titlu */
+        }
+
+        .add-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .add-btn:hover {
+            background: #218838;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .editable-input {
+            width: calc(100% - 8px); /* Ajustare pentru padding */
+            padding: 4px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .editable-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .price-input, .quantity-input {
+            width: calc(100% - 8px);
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .price-input:focus, .quantity-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .total-price {
+            font-weight: bold;
+            color: #27ae60;
+        }
+
+        .quantity {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .budget-summary {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .budget-summary h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.5em;
+        }
+
+        .budget-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .remaining-budget {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .warning {
+            background: #e74c3c;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .action-cell {
+            width: 80px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 Calculator Grătar Editabil 🔥</h1>
+            <p>Gestionează-ți lista de grătar în timp real!</p>
+        </div>
+
+        <div class="content">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="persoane">Numărul de persoane:</label>
+                    <input type="number" id="persoane" value="28" min="1" max="100">
+                </div>
+                <div class="input-group">
+                    <label for="buget">Buget total (LEI):</label>
+                    <input type="number" id="buget" value="1200" min="0" step="0.01">
+                </div>
+            </div>
+
+            <div class="tables-grid-container">
+                <div class="table-section">
+                    <h3>🥩 Carne și Preparate <button class="add-btn" onclick="adaugaProdus('carne')">+ Adaugă</button></h3>
+                    <table id="carneTable">
+                        <thead>
+                            <tr>
+                                <th>Produs</th>
+                                <th>Cantitate/pers</th>
+                                <th>Unitate</th>
+                                <th>Preț</th>
+                                <th>Total</th>
+                                <th>Acțiuni</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div class="table-section">
+                    <h3>🥗 Legume și Fructe <button class="add-btn" onclick="adaugaProdus('legume')">+ Adaugă</button></h3>
+                    <table id="legumeTable">
+                        <thead>
+                            <tr>
+                                <th>Produs</th>
+                                <th>Cantitate/pers</th>
+                                <th>Unitate</th>
+                                <th>Preț</th>
+                                <th>Total</th>
+                                <th>Acțiuni</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div class="table-section">
+                    <h3>🍺 Băuturi și Alcool <button class="add-btn" onclick="adaugaProdus('bauturi')">+ Adaugă</button></h3>
+                    <table id="bauturiTable">
+                        <thead>
+                            <tr>
+                                <th>Produs</th>
+                                <th>Cantitate/pers</th>
+                                <th>Unitate</th>
+                                <th>Preț</th>
+                                <th>Total</th>
+                                <th>Acțiuni</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div class="table-section">
+                    <h3>🍽️ Accesorii și Diverse <button class="add-btn" onclick="adaugaProdus('condimente')">+ Adaugă</button></h3>
+                    <table id="condimenteTable">
+                        <thead>
+                            <tr>
+                                <th>Produs</th>
+                                <th>Cantitate/pers</th>
+                                <th>Unitate</th>
+                                <th>Preț</th>
+                                <th>Total</th>
+                                <th>Acțiuni</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="budget-summary" id="budgetSummary">
+                <h3>📊 Sumar Buget</h3>
+                <div class="budget-row">
+                    <span>Buget total:</span>
+                    <span id="totalBuget">1200.00 LEI</span>
+                </div>
+                <div class="budget-row">
+                    <span>Total cheltuieli:</span>
+                    <span id="totalCheltuieli">0.00 LEI</span>
+                </div>
+                <div class="remaining-budget">
+                    <div class="budget-row">
+                        <span>Bani rămași:</span>
+                        <span id="baniRamasi">1200.00 LEI</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Date pentru calculul cantităților și prețurilor
+        let produse = {
+            carne: [
+                { nume: "Mici", cantitate_per_pers: 0.2, pret: 25, unitate: "kg" },
+                { nume: "Ceafă de porc", cantitate_per_pers: 0.5, pret: 25, unitate: "buc" },
+                { nume: "Pulpe dezosate de pui", cantitate_per_pers: 0.25, pret: 16, unitate: "kg" },
+                { nume: "Cârnați de porc", cantitate_per_pers: 0.2, pret: 18, unitate: "kg" }
+            ],
+            legume: [
+                { nume: "Ceapă", cantitate_per_pers: 0.07, pret: 4, unitate: "buc" },
+                { nume: "Ciuperci brune", cantitate_per_pers: 0.1, pret: 12, unitate: "kg" },
+                { nume: "Lămâi", cantitate_per_pers: 0.3, pret: 8, unitate: "buc" },
+                { nume: "Lime", cantitate_per_pers: 0.2, pret: 12, unitate: "buc" },
+                { nume: "Portocale", cantitate_per_pers: 0.3, pret: 6, unitate: "buc" }
+            ],
+            bauturi: [
+                { nume: "Bere (bax)", cantitate_per_pers: 0.18, pret: 35, unitate: "bax" },
+                { nume: "Bere fără alcool", cantitate_per_pers: 0.2, pret: 4, unitate: "buc" },
+                { nume: "Cola (bax)", cantitate_per_pers: 0.07, pret: 25, unitate: "bax" },
+                { nume: "Schweppes", cantitate_per_pers: 0.32, pret: 5, unitate: "buc" },
+                { nume: "Apă (bidon 5L)", cantitate_per_pers: 0.14, pret: 8, unitate: "buc" },
+                { nume: "Rom", cantitate_per_pers: 0.2, pret: 35, unitate: "buc" },
+                { nume: "Jägermeister", cantitate_per_pers: 0.07, pret: 65, unitate: "buc" },
+                { nume: "Tequila", cantitate_per_pers: 0.03, pret: 45, unitate: "buc" },
+                { nume: "Gin", cantitate_per_pers: 0.2, pret: 40, unitate: "buc" }
+            ],
+            condimente: [
+                { nume: "Pâine", cantitate_per_pers: 0.36, pret: 4, unitate: "buc" },
+                { nume: "Muștar (borcan)", cantitate_per_pers: 0.11, pret: 6, unitate: "buc" },
+                { nume: "Chipsuri/Semințe", cantitate_per_pers: 0.2, pret: 8, unitate: "buc" },
+                { nume: "Gheață", cantitate_per_pers: 0.3, pret: 5, unitate: "kg" },
+                { nume: "Carbuni (sac)", cantitate_per_pers: 0.1, pret: 25, unitate: "buc" },
+                { nume: "Farfurii (set 50)", cantitate_per_pers: 0.07, pret: 15, unitate: "set" },
+                { nume: "Pahare (set 50)", cantitate_per_pers: 0.07, pret: 12, unitate: "set" },
+                { nume: "Role bucătărie", cantitate_per_pers: 0.14, pret: 8, unitate: "buc" },
+                { nume: "Saci gunoi mari", cantitate_per_pers: 0.14, pret: 12, unitate: "buc" }
+            ]
+        };
+
+        function calculeazaCantitate(cantitate_per_pers, nr_persoane) {
+            const total = cantitate_per_pers * nr_persoane;
+            return total < 1 ? total.toFixed(2) : Math.ceil(total * 10) / 10;
+        }
+
+        function actualizeazaTabela(tabelId, produse_categorie, categoria) {
+            const tabel = document.getElementById(tabelId);
+            const tbody = tabel.querySelector('tbody');
+            const nr_persoane = parseInt(document.getElementById('persoane').value) || 0;
+
+            tbody.innerHTML = '';
+
+            produse_categorie.forEach((produs, index) => {
+                const cantitate = calculeazaCantitate(produs.cantitate_per_pers, nr_persoane);
+                const total = (cantitate * produs.pret).toFixed(2);
+
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><input type="text" class="editable-input" value="${produs.nume}" onchange="actualizeazaNume('${categoria}', ${index}, this.value)"></td>
+                    <td><input type="number" class="quantity-input" value="${produs.cantitate_per_pers}" step="0.01" onchange="actualizeazaCantitate('${categoria}', ${index}, this.value)"></td>
+                    <td><input type="text" class="editable-input" value="${produs.unitate}" onchange="actualizeazaUnitate('${categoria}', ${index}, this.value)"></td>
+                    <td><input type="number" class="price-input" value="${produs.pret}" step="0.01" onchange="actualizeazaPret('${categoria}', ${index}, this.value)"></td>
+                    <td class="total-price">${total} LEI</td>
+                    <td class="action-cell"><button class="delete-btn" onclick="stergeProdus('${categoria}', ${index})">Șterge</button></td>
+                `;
+            });
+        }
+
+        function actualizeazaNume(categoria, index, numeNou) {
+            produse[categoria][index].nume = numeNou;
+        }
+
+        function actualizeazaCantitate(categoria, index, cantitateNoua) {
+            produse[categoria][index].cantitate_per_pers = parseFloat(cantitateNoua) || 0;
+            actualizeazaToate();
+        }
+
+        function actualizeazaUnitate(categoria, index, unitateNoua) {
+            produse[categoria][index].unitate = unitateNoua;
+        }
+
+        function actualizeazaPret(categoria, index, pretNou) {
+            produse[categoria][index].pret = parseFloat(pretNou) || 0;
+            actualizeazaToate();
+        }
+
+        function adaugaProdus(categoria) {
+            const produs = {
+                nume: "Produs nou",
+                cantitate_per_pers: 0.1,
+                pret: 1,
+                unitate: "buc"
+            };
+            produse[categoria].push(produs);
+            actualizeazaToate();
+        }
+
+        function stergeProdus(categoria, index) {
+            if (confirm('Sigur vrei să ștergi acest produs?')) {
+                produse[categoria].splice(index, 1);
+                actualizeazaToate();
+            }
+        }
+
+        function calculeazaTotalCheltuieli() {
+            const nr_persoane = parseInt(document.getElementById('persoane').value) || 0;
+            let total = 0;
+
+            Object.values(produse).forEach(categorie => {
+                categorie.forEach(produs => {
+                    const cantitate = calculeazaCantitate(produs.cantitate_per_pers, nr_persoane);
+                    total += cantitate * produs.pret;
+                });
+            });
+
+            return total;
+        }
+
+        function actualizeazaBuget() {
+            const bugetTotal = parseFloat(document.getElementById('buget').value) || 0;
+            const totalCheltuieli = calculeazaTotalCheltuieli();
+            const baniRamasi = bugetTotal - totalCheltuieli;
+
+            document.getElementById('totalBuget').textContent = `${bugetTotal.toFixed(2)} LEI`;
+            document.getElementById('totalCheltuieli').textContent = `${totalCheltuieli.toFixed(2)} LEI`;
+            document.getElementById('baniRamasi').textContent = `${baniRamasi.toFixed(2)} LEI`;
+
+            const budgetSummary = document.getElementById('budgetSummary');
+            if (baniRamasi < 0) {
+                budgetSummary.classList.add('warning');
+            } else {
+                budgetSummary.classList.remove('warning');
+            }
+        }
+
+        function actualizeazaToate() {
+            actualizeazaTabela('carneTable', produse.carne, 'carne');
+            actualizeazaTabela('legumeTable', produse.legume, 'legume');
+            actualizeazaTabela('bauturiTable', produse.bauturi, 'bauturi');
+            actualizeazaTabela('condimenteTable', produse.condimente, 'condimente');
+            actualizeazaBuget();
+        }
+
+        // Event listeners
+        document.getElementById('persoane').addEventListener('input', actualizeazaToate);
+        document.getElementById('buget').addEventListener('input', actualizeazaBuget);
+
+        // Inițializare
+        actualizeazaToate();
+    </script>
+</body>
+</html>
