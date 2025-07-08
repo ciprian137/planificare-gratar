@@ -96,8 +96,7 @@
             color: #333;
         }
 
-        .input-group input,
-        .input-group select { /* Select-ul rămâne, dar nu va fi folosit pentru profil */
+        .input-group input {
             padding: 12px;
             border: 1px solid #ccc;
             border-radius: 8px;
@@ -107,8 +106,7 @@
             color: #333;
         }
 
-        .input-group input:focus,
-        .input-group select:focus {
+        .input-group input:focus {
             outline: none;
             border-color: #6a82fb; /* O nuanță de albastru/violet */
             box-shadow: 0 0 0 3px rgba(106, 130, 251, 0.2);
@@ -208,7 +206,7 @@
         .editable-input,
         .price-input,
         .quantity-input,
-        .notes-input { /* profile-select și time-input eliminate */
+        .notes-input {
             width: calc(100% - 8px);
             padding: 4px;
             border: 1px solid #ddd;
@@ -221,13 +219,13 @@
         .editable-input:focus,
         .price-input:focus,
         .quantity-input:focus,
-        .notes-input:focus { /* profile-select și time-input eliminate */
+        .notes-input:focus {
             outline: none;
             border-color: #6a82fb;
             box-shadow: 0 0 0 2px rgba(106, 130, 251, 0.2);
         }
 
-        .price-input, .quantity-input { /* time-input eliminat */
+        .price-input, .quantity-input {
             text-align: center;
         }
 
@@ -309,10 +307,10 @@
                     <input type="number" id="persoane" value="28" min="1" max="100">
                 </div>
                 <div class="input-group">
-                    <label for="buget">Buget total (LEI):</label>
+                    <label for="buget">Buget total (RON):</label>
                     <input type="number" id="buget" value="1200" min="0" step="0.01">
                 </div>
-                </div>
+            </div>
 
             <div class="tables-grid-container">
                 <div class="table-section">
@@ -323,10 +321,10 @@
                                 <th onclick="sorteazaTabel('carne', 'nume')">Produs</th>
                                 <th onclick="sorteazaTabel('carne', 'cantitate')">Cantitate</th>
                                 <th onclick="sorteazaTabel('carne', 'unitate')">Unitate</th>
-                                <th onclick="sorteazaTabel('carne', 'pret')">Preț</th>
+                                <th onclick="sorteazaTabel('carne', 'pret')">Preț/Unitate (RON)</th>
                                 <th>Am Acasă</th>
                                 <th>Notițe</th>
-                                <th>Total</th>
+                                <th>Total (RON)</th>
                                 <th>Acțiuni</th>
                             </tr>
                         </thead>
@@ -342,10 +340,10 @@
                                 <th onclick="sorteazaTabel('legume', 'nume')">Produs</th>
                                 <th onclick="sorteazaTabel('legume', 'cantitate')">Cantitate</th>
                                 <th onclick="sorteazaTabel('legume', 'unitate')">Unitate</th>
-                                <th onclick="sorteazaTabel('legume', 'pret')">Preț</th>
+                                <th onclick="sorteazaTabel('legume', 'pret')">Preț/Unitate (RON)</th>
                                 <th>Am Acasă</th>
                                 <th>Notițe</th>
-                                <th>Total</th>
+                                <th>Total (RON)</th>
                                 <th>Acțiuni</th>
                             </tr>
                         </thead>
@@ -361,10 +359,10 @@
                                 <th onclick="sorteazaTabel('bauturi', 'nume')">Produs</th>
                                 <th onclick="sorteazaTabel('bauturi', 'cantitate')">Cantitate</th>
                                 <th onclick="sorteazaTabel('bauturi', 'unitate')">Unitate</th>
-                                <th onclick="sorteazaTabel('bauturi', 'pret')">Preț</th>
+                                <th onclick="sorteazaTabel('bauturi', 'pret')">Preț/Unitate (RON)</th>
                                 <th>Am Acasă</th>
                                 <th>Notițe</th>
-                                <th>Total</th>
+                                <th>Total (RON)</th>
                                 <th>Acțiuni</th>
                             </tr>
                         </thead>
@@ -380,10 +378,10 @@
                                 <th onclick="sorteazaTabel('condimente', 'nume')">Produs</th>
                                 <th onclick="sorteazaTabel('condimente', 'cantitate')">Cantitate</th>
                                 <th onclick="sorteazaTabel('condimente', 'unitate')">Unitate</th>
-                                <th onclick="sorteazaTabel('condimente', 'pret')">Preț</th>
+                                <th onclick="sorteazaTabel('condimente', 'pret')">Preț/Unitate (RON)</th>
                                 <th>Am Acasă</th>
                                 <th>Notițe</th>
-                                <th>Total</th>
+                                <th>Total (RON)</th>
                                 <th>Acțiuni</th>
                             </tr>
                         </thead>
@@ -396,16 +394,16 @@
                 <h3>📊 Sumar Buget</h3>
                 <div class="budget-row">
                     <span>Buget total:</span>
-                    <span id="totalBuget">1200.00 LEI</span>
+                    <span id="totalBuget">1200.00 RON</span>
                 </div>
                 <div class="budget-row">
                     <span>Total cheltuieli (est. necesar):</span>
-                    <span id="totalCheltuieli">0.00 LEI</span>
+                    <span id="totalCheltuieli">0.00 RON</span>
                 </div>
                 <div class="remaining-budget">
                     <div class="budget-row">
                         <span>Bani rămași:</span>
-                        <span id="baniRamasi">1200.00 LEI</span>
+                        <span id="baniRamasi">1200.00 RON</span>
                     </div>
                 </div>
             </div>
@@ -415,59 +413,51 @@
     <script>
         let produse = {
             carne: [
-                { nume: "Mici", cantitate: 0.2, unitate: "kg", pret: 25, am_acasa: false, notite: "" },
-                { nume: "Ceafă de porc", cantitate: 0.5, unitate: "buc", pret: 25, am_acasa: false, notite: "" },
-                { nume: "Pulpe dezosate de pui", cantitate: 0.25, unitate: "kg", pret: 16, am_acasa: false, notite: "" },
-                { nume: "Cârnați de porc", cantitate: 0.2, unitate: "kg", pret: 18, am_acasa: false, notite: "" }
+                { nume: "Mici", cantitate: 2, unitate: "kg", pret: 25, am_acasa: false, notite: "" }, // 2 kg de mici, preț/kg 25 RON
+                { nume: "Ceafă de porc", cantitate: 1, unitate: "buc", pret: 50, am_acasa: false, notite: "Bucată de 1 kg" }, // 1 bucată, preț/buc 50 RON
+                { nume: "Pulpe dezosate de pui", cantitate: 1.5, unitate: "kg", pret: 16, am_acasa: false, notite: "" },
+                { nume: "Cârnați de porc", cantitate: 1, unitate: "kg", pret: 18, am_acasa: false, notite: "" }
             ],
             legume: [
-                { nume: "Ceapă", cantitate: 0.07, unitate: "buc", pret: 4, am_acasa: false, notite: "" },
-                { nume: "Ciuperci brune", cantitate: 0.1, unitate: "kg", pret: 12, am_acasa: false, notite: "" },
-                { nume: "Lămâi", cantitate: 0.3, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
-                { nume: "Lime", cantitate: 0.2, unitate: "buc", pret: 12, am_acasa: false, notite: "" },
-                { nume: "Portocale", cantitate: 0.3, unitate: "buc", pret: 6, am_acasa: false, notite: "" }
+                { nume: "Ceapă", cantitate: 0.5, unitate: "kg", pret: 4, am_acasa: false, notite: "" },
+                { nume: "Ciuperci brune", cantitate: 1, unitate: "caserola", pret: 12, am_acasa: false, notite: "" },
+                { nume: "Lămâi", cantitate: 3, unitate: "buc", pret: 2, am_acasa: false, notite: "" }, // 3 bucăți, preț/buc 2 RON
+                { nume: "Lime", cantitate: 2, unitate: "buc", pret: 3, am_acasa: false, notite: "" },
+                { nume: "Portocale", cantitate: 1, unitate: "kg", pret: 6, am_acasa: false, notite: "" }
             ],
             bauturi: [
-                { nume: "Bere (bax)", cantitate: 0.18, unitate: "bax", pret: 35, am_acasa: false, notite: "" },
-                { nume: "Bere fără alcool", cantitate: 0.2, unitate: "buc", pret: 4, am_acasa: false, notite: "" },
-                { nume: "Cola (bax)", cantitate: 0.07, unitate: "bax", pret: 25, am_acasa: false, notite: "" },
-                { nume: "Schweppes", cantitate: 0.32, unitate: "buc", pret: 5, am_acasa: false, notite: "" },
-                { nume: "Apă (bidon 5L)", cantitate: 0.14, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
-                { nume: "Rom", cantitate: 0.2, unitate: "buc", pret: 35, am_acasa: false, notite: "" },
-                { nume: "Jägermeister", cantitate: 0.07, unitate: "buc", pret: 65, am_acasa: false, notite: "" },
-                { nume: "Tequila", cantitate: 0.03, unitate: "buc", pret: 45, am_acasa: false, notite: "" },
-                { nume: "Gin", cantitate: 0.2, unitate: "buc", pret: 40, am_acasa: false, notite: "" }
+                { nume: "Bere", cantitate: 3, unitate: "bax", pret: 35, am_acasa: false, notite: "" }, // 3 baxuri, preț/bax 35 RON
+                { nume: "Bere fără alcool", cantitate: 6, unitate: "buc", pret: 4, am_acasa: false, notite: "" },
+                { nume: "Cola", cantitate: 1, unitate: "bax", pret: 25, am_acasa: false, notite: "" },
+                { nume: "Apă (5L)", cantitate: 2, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
+                { nume: "Rom", cantitate: 1, unitate: "sticla", pret: 35, am_acasa: false, notite: "" }
             ],
             condimente: [
-                { nume: "Pâine", cantitate: 0.36, unitate: "buc", pret: 4, am_acasa: false, notite: "" },
-                { nume: "Muștar (borcan)", cantitate: 0.11, unitate: "buc", pret: 6, am_acasa: false, notite: "" },
-                { nume: "Chipsuri/Semințe", cantitate: 0.2, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
-                { nume: "Gheață", cantitate: 0.3, unitate: "kg", pret: 5, am_acasa: false, notite: "" },
-                { nume: "Carbuni (sac)", cantitate: 0.1, unitate: "buc", pret: 25, am_acasa: false, notite: "" },
-                { nume: "Farfurii (set 50)", cantitate: 0.07, unitate: "set", pret: 15, am_acasa: false, notite: "" },
-                { nume: "Pahare (set 50)", cantitate: 0.07, unitate: "set", pret: 12, am_acasa: false, notite: "" },
-                { nume: "Role bucătărie", cantitate: 0.14, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
-                { nume: "Saci gunoi mari", cantitate: 0.14, unitate: "buc", pret: 12, am_acasa: false, notite: "" }
+                { nume: "Pâine", cantitate: 4, unitate: "buc", pret: 4, am_acasa: false, notite: "" },
+                { nume: "Muștar", cantitate: 1, unitate: "borcan", pret: 6, am_acasa: false, notite: "" },
+                { nume: "Chipsuri/Semințe", cantitate: 3, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
+                { nume: "Gheață", cantitate: 2, unitate: "kg", pret: 5, am_acasa: false, notite: "" },
+                { nume: "Carbuni", cantitate: 1, unitate: "sac", pret: 25, am_acasa: false, notite: "" }, // 1 sac, preț/sac 25 RON
+                { nume: "Farfurii", cantitate: 1, unitate: "set", pret: 15, am_acasa: false, notite: "Set de 50 buc" },
+                { nume: "Pahare", cantitate: 1, unitate: "set", pret: 12, am_acasa: false, notite: "Set de 50 buc" },
+                { nume: "Role bucătărie", cantitate: 1, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
+                { nume: "Saci gunoi mari", cantitate: 1, unitate: "buc", pret: 12, am_acasa: false, notite: "" }
             ]
         };
 
-        // Multiplicatorul de profil a fost eliminat complet. Acum cantitatea per persoana * nr_persoane
-        function calculeazaCantitateTotala(cantitate_per_pers, nr_persoane) {
-            const total = cantitate_per_pers * nr_persoane;
-            // Rotunjire în sus pentru a asigura suficiente produse, cu 2 zecimale pentru valori sub 1
-            return total < 1 ? total.toFixed(2) : Math.ceil(total * 100) / 100; // Rotunjire la 2 zecimale pt numere mari
+        // Cantitatea este acum numărul de unități (ex: saci, bucăți, kg) direct
+        function calculeazaTotalProdus(cantitate, pret) {
+            return (cantitate * pret).toFixed(2);
         }
 
         function actualizeazaTabela(tabelId, produse_categorie, categoria) {
             const tabel = document.getElementById(tabelId);
             const tbody = tabel.querySelector('tbody');
-            const nr_persoane = parseInt(document.getElementById('persoane').value) || 0;
 
             tbody.innerHTML = '';
 
             produse_categorie.forEach((produs, index) => {
-                const cantitateCalculata = calculeazaCantitateTotala(produs.cantitate, nr_persoane);
-                const totalProdus = (cantitateCalculata * produs.pret).toFixed(2);
+                const totalProdusCalculat = calculeazaTotalProdus(produs.cantitate, produs.pret);
 
                 const row = tbody.insertRow();
                 row.innerHTML = `
@@ -477,7 +467,7 @@
                     <td><input type="number" class="price-input" value="${produs.pret}" step="0.01" onchange="actualizeazaProprietate('${categoria}', ${index}, 'pret', parseFloat(this.value) || 0)"></td>
                     <td><input type="checkbox" onchange="actualizeazaProprietate('${categoria}', ${index}, 'am_acasa', this.checked)" ${produs.am_acasa ? 'checked' : ''}></td>
                     <td><input type="text" class="notes-input" value="${produs.notite}" onchange="actualizeazaProprietate('${categoria}', ${index}, 'notite', this.value)"></td>
-                    <td class="total-price">${totalProdus} LEI</td>
+                    <td class="total-price">${totalProdusCalculat} RON</td>
                     <td class="action-cell"><button class="delete-btn" onclick="stergeProdus('${categoria}', ${index})">Șterge</button></td>
                 `;
             });
@@ -489,10 +479,9 @@
         }
 
         function adaugaProdus(categoria) {
-            // Profilul inițial a fost eliminat, noul produs are cantitatea direct
             const produs = {
                 nume: "Produs nou",
-                cantitate: 0.1, // Cantitate per persoana
+                cantitate: 1, // Cantitatea inițială este 1 unitate
                 unitate: "buc",
                 pret: 1,
                 am_acasa: false,
@@ -510,14 +499,12 @@
         }
 
         function calculeazaTotalCheltuieli() {
-            const nr_persoane = parseInt(document.getElementById('persoane').value) || 0;
             let total = 0;
 
             Object.values(produse).forEach(categorie => {
                 categorie.forEach(produs => {
                     if (!produs.am_acasa) { // Include doar produsele care nu sunt "acasă"
-                        const cantitateCalculata = calculeazaCantitateTotala(produs.cantitate, nr_persoane);
-                        total += cantitateCalculata * produs.pret;
+                        total += produs.cantitate * produs.pret;
                     }
                 });
             });
@@ -529,9 +516,9 @@
             const totalCheltuieli = calculeazaTotalCheltuieli();
             const baniRamasi = bugetTotal - totalCheltuieli;
 
-            document.getElementById('totalBuget').textContent = `${bugetTotal.toFixed(2)} LEI`;
-            document.getElementById('totalCheltuieli').textContent = `${totalCheltuieli.toFixed(2)} LEI`;
-            document.getElementById('baniRamasi').textContent = `${baniRamasi.toFixed(2)} LEI`;
+            document.getElementById('totalBuget').textContent = `${bugetTotal.toFixed(2)} RON`;
+            document.getElementById('totalCheltuieli').textContent = `${totalCheltuieli.toFixed(2)} RON`;
+            document.getElementById('baniRamasi').textContent = `${baniRamasi.toFixed(2)} RON`;
 
             const budgetSummary = document.getElementById('budgetSummary');
             if (baniRamasi < 0) {
@@ -590,16 +577,17 @@
 
         // Funcția pentru generarea și descărcarea listei de cumpărături
         function genereazaListaCumparaturiSiDescarca() {
-            const nr_persoane = parseInt(document.getElementById('persoane').value) || 0;
+            const nr_persoane = parseInt(document.getElementById('persoane').value) || 0; // Păstrăm numărul de persoane, poate e util pentru notițe
+
             const lista = {};
             let totalLista = 0;
             let outputText = "--- Lista de Cumpărături Grătar ---\n\n";
-            outputText += `Număr persoane: ${nr_persoane}\n\n`;
+            outputText += `Număr persoane estimate: ${nr_persoane}\n\n`; // Păstrăm informația despre numărul de persoane
 
             Object.values(produse).forEach(categorie => {
                 categorie.forEach(produs => {
                     if (!produs.am_acasa) { // Doar ce nu e deja "acasă"
-                        const cantitateNecesara = parseFloat(calculeazaCantitateTotala(produs.cantitate, nr_persoane));
+                        const cantitateNecesara = produs.cantitate; // Acum cantitatea e fixă
                         const pretTotalProdus = cantitateNecesara * produs.pret;
 
                         if (lista[produs.nume]) {
@@ -609,7 +597,8 @@
                             lista[produs.nume] = {
                                 cantitate: cantitateNecesara,
                                 unitate: produs.unitate,
-                                pretTotal: pretTotalProdus
+                                pretTotal: pretTotalProdus,
+                                notite: produs.notite // Păstrăm notițele
                             };
                         }
                         totalLista += pretTotalProdus;
@@ -620,14 +609,14 @@
             // Adaugă produsele la textul final
             for (const numeProdus in lista) {
                 const item = lista[numeProdus];
-                outputText += `- ${numeProdus}: ${item.cantitate.toFixed(2)} ${item.unitate} (${item.pretTotal.toFixed(2)} LEI)\n`;
+                outputText += `- ${numeProdus}: ${item.cantitate.toFixed(2)} ${item.unitate} (${item.pretTotal.toFixed(2)} RON)\n`;
                 if (item.notite) { // Adaugă notițele dacă există
                     outputText += `  (Notițe: ${item.notite})\n`;
                 }
             }
 
             outputText += `\n--------------------------------------\n`;
-            outputText += `Total estimat pentru cumpărături: ${totalLista.toFixed(2)} LEI\n`;
+            outputText += `Total estimat pentru cumpărături: ${totalLista.toFixed(2)} RON\n`;
             outputText += `--------------------------------------\n`;
 
             // Creează și descarcă fișierul text
@@ -645,7 +634,8 @@
         }
 
         // Event listeners
-        document.getElementById('persoane').addEventListener('input', actualizeazaToate);
+        // Numărul de persoane influențează doar sumarul și notițele, nu cantitățile produselor
+        document.getElementById('persoane').addEventListener('input', actualizeazaBuget);
         document.getElementById('buget').addEventListener('input', actualizeazaBuget);
 
         // Inițializare
