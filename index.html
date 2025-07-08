@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificator grătar</title>
+    <title>Calculator Grătar - Planificator Simplificat</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         body {
@@ -97,7 +97,7 @@
         }
 
         .input-group input,
-        .input-group select {
+        .input-group select { /* Select-ul rămâne, dar nu va fi folosit pentru profil */
             padding: 12px;
             border: 1px solid #ccc;
             border-radius: 8px;
@@ -208,9 +208,7 @@
         .editable-input,
         .price-input,
         .quantity-input,
-        .profile-select,
-        .time-input,
-        .notes-input {
+        .notes-input { /* profile-select și time-input eliminate */
             width: calc(100% - 8px);
             padding: 4px;
             border: 1px solid #ddd;
@@ -223,15 +221,13 @@
         .editable-input:focus,
         .price-input:focus,
         .quantity-input:focus,
-        .profile-select:focus,
-        .time-input:focus,
-        .notes-input:focus {
+        .notes-input:focus { /* profile-select și time-input eliminate */
             outline: none;
             border-color: #6a82fb;
             box-shadow: 0 0 0 2px rgba(106, 130, 251, 0.2);
         }
 
-        .price-input, .quantity-input, .time-input {
+        .price-input, .quantity-input { /* time-input eliminat */
             text-align: center;
         }
 
@@ -298,8 +294,8 @@
 <body>
     <div class="container" id="gratarPlanContainer">
         <div class="header">
-            <h1>🥩 Planificator de grătar 🥗</h1>
-            <p>Să-ți faci propriu grătar vere!</p>
+            <h1>🔥 Calculator Grătar - Planificator Simplificat 🔥</h1>
+            <p>Gestionează-ți lista de grătar în timp real și salvează-ți planurile!</p>
             <div class="action-buttons">
                 <button onclick="salveazaPlanCaImagine()">📸 Salvează Plan (Imagine)</button>
                 <button onclick="genereazaListaCumparaturiSiDescarca()">🛒 Generează Listă Cumpărături</button>
@@ -316,16 +312,7 @@
                     <label for="buget">Buget total (LEI):</label>
                     <input type="number" id="buget" value="1200" min="0" step="0.01">
                 </div>
-                <div class="input-group">
-                    <label for="profilInitial">Profil cantitate nou produs:</label>
-                    <select id="profilInitial">
-                        <option value="normal">Normal</option>
-                        <option value="mancacios">Mâncăcios</option>
-                        <option value="vegetarian">Vegetarian</option>
-                        <option value="copil">Copil</option>
-                    </select>
                 </div>
-            </div>
 
             <div class="tables-grid-container">
                 <div class="table-section">
@@ -334,11 +321,9 @@
                         <thead>
                             <tr>
                                 <th onclick="sorteazaTabel('carne', 'nume')">Produs</th>
-                                <th onclick="sorteazaTabel('carne', 'cantitate_per_pers')">Cantitate/pers</th>
-                                <th onclick="sorteazaTabel('carne', 'profil')">Profil Cantitate</th>
+                                <th onclick="sorteazaTabel('carne', 'cantitate')">Cantitate</th>
                                 <th onclick="sorteazaTabel('carne', 'unitate')">Unitate</th>
                                 <th onclick="sorteazaTabel('carne', 'pret')">Preț</th>
-                                <th onclick="sorteazaTabel('carne', 'timp_preparare')">Timp Prep. (min)</th>
                                 <th>Am Acasă</th>
                                 <th>Notițe</th>
                                 <th>Total</th>
@@ -355,11 +340,9 @@
                         <thead>
                             <tr>
                                 <th onclick="sorteazaTabel('legume', 'nume')">Produs</th>
-                                <th onclick="sorteazaTabel('legume', 'cantitate_per_pers')">Cantitate/pers</th>
-                                <th onclick="sorteazaTabel('legume', 'profil')">Profil Cantitate</th>
+                                <th onclick="sorteazaTabel('legume', 'cantitate')">Cantitate</th>
                                 <th onclick="sorteazaTabel('legume', 'unitate')">Unitate</th>
                                 <th onclick="sorteazaTabel('legume', 'pret')">Preț</th>
-                                <th onclick="sorteazaTabel('legume', 'timp_preparare')">Timp Prep. (min)</th>
                                 <th>Am Acasă</th>
                                 <th>Notițe</th>
                                 <th>Total</th>
@@ -376,11 +359,9 @@
                         <thead>
                             <tr>
                                 <th onclick="sorteazaTabel('bauturi', 'nume')">Produs</th>
-                                <th onclick="sorteazaTabel('bauturi', 'cantitate_per_pers')">Cantitate/pers</th>
-                                <th onclick="sorteazaTabel('bauturi', 'profil')">Profil Cantitate</th>
+                                <th onclick="sorteazaTabel('bauturi', 'cantitate')">Cantitate</th>
                                 <th onclick="sorteazaTabel('bauturi', 'unitate')">Unitate</th>
                                 <th onclick="sorteazaTabel('bauturi', 'pret')">Preț</th>
-                                <th onclick="sorteazaTabel('bauturi', 'timp_preparare')">Timp Prep. (min)</th>
                                 <th>Am Acasă</th>
                                 <th>Notițe</th>
                                 <th>Total</th>
@@ -397,11 +378,9 @@
                         <thead>
                             <tr>
                                 <th onclick="sorteazaTabel('condimente', 'nume')">Produs</th>
-                                <th onclick="sorteazaTabel('condimente', 'cantitate_per_pers')">Cantitate/pers</th>
-                                <th onclick="sorteazaTabel('condimente', 'profil')">Profil Cantitate</th>
+                                <th onclick="sorteazaTabel('condimente', 'cantitate')">Cantitate</th>
                                 <th onclick="sorteazaTabel('condimente', 'unitate')">Unitate</th>
                                 <th onclick="sorteazaTabel('condimente', 'pret')">Preț</th>
-                                <th onclick="sorteazaTabel('condimente', 'timp_preparare')">Timp Prep. (min)</th>
                                 <th>Am Acasă</th>
                                 <th>Notițe</th>
                                 <th>Total</th>
@@ -436,54 +415,47 @@
     <script>
         let produse = {
             carne: [
-                { nume: "Mici", cantitate_per_pers: 0.2, unitate: "kg", pret: 25, profil: "normal", timp_preparare: 30, am_acasa: false, notite: "" },
-                { nume: "Ceafă de porc", cantitate_per_pers: 0.5, unitate: "buc", pret: 25, profil: "normal", timp_preparare: 45, am_acasa: false, notite: "" },
-                { nume: "Pulpe dezosate de pui", cantitate_per_pers: 0.25, unitate: "kg", pret: 16, profil: "normal", timp_preparare: 35, am_acasa: false, notite: "" },
-                { nume: "Cârnați de porc", cantitate_per_pers: 0.2, unitate: "kg", pret: 18, profil: "normal", timp_preparare: 25, am_acasa: false, notite: "" }
+                { nume: "Mici", cantitate: 0.2, unitate: "kg", pret: 25, am_acasa: false, notite: "" },
+                { nume: "Ceafă de porc", cantitate: 0.5, unitate: "buc", pret: 25, am_acasa: false, notite: "" },
+                { nume: "Pulpe dezosate de pui", cantitate: 0.25, unitate: "kg", pret: 16, am_acasa: false, notite: "" },
+                { nume: "Cârnați de porc", cantitate: 0.2, unitate: "kg", pret: 18, am_acasa: false, notite: "" }
             ],
             legume: [
-                { nume: "Ceapă", cantitate_per_pers: 0.07, unitate: "buc", pret: 4, profil: "normal", timp_preparare: 5, am_acasa: false, notite: "" },
-                { nume: "Ciuperci brune", cantitate_per_pers: 0.1, unitate: "kg", pret: 12, profil: "normal", timp_preparare: 15, am_acasa: false, notite: "" },
-                { nume: "Lămâi", cantitate_per_pers: 0.3, unitate: "buc", pret: 8, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Lime", cantitate_per_pers: 0.2, unitate: "buc", pret: 12, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Portocale", cantitate_per_pers: 0.3, unitate: "buc", pret: 6, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" }
+                { nume: "Ceapă", cantitate: 0.07, unitate: "buc", pret: 4, am_acasa: false, notite: "" },
+                { nume: "Ciuperci brune", cantitate: 0.1, unitate: "kg", pret: 12, am_acasa: false, notite: "" },
+                { nume: "Lămâi", cantitate: 0.3, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
+                { nume: "Lime", cantitate: 0.2, unitate: "buc", pret: 12, am_acasa: false, notite: "" },
+                { nume: "Portocale", cantitate: 0.3, unitate: "buc", pret: 6, am_acasa: false, notite: "" }
             ],
             bauturi: [
-                { nume: "Bere (bax)", cantitate_per_pers: 0.18, unitate: "bax", pret: 35, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Bere fără alcool", cantitate_per_pers: 0.2, unitate: "buc", pret: 4, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Cola (bax)", cantitate_per_pers: 0.07, unitate: "bax", pret: 25, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Schweppes", cantitate_per_pers: 0.32, unitate: "buc", pret: 5, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Apă (bidon 5L)", cantitate_per_pers: 0.14, unitate: "buc", pret: 8, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Rom", cantitate_per_pers: 0.2, unitate: "buc", pret: 35, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Jägermeister", cantitate_per_pers: 0.07, unitate: "buc", pret: 65, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Tequila", cantitate_per_pers: 0.03, unitate: "buc", pret: 45, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Gin", cantitate_per_pers: 0.2, unitate: "buc", pret: 40, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" }
+                { nume: "Bere (bax)", cantitate: 0.18, unitate: "bax", pret: 35, am_acasa: false, notite: "" },
+                { nume: "Bere fără alcool", cantitate: 0.2, unitate: "buc", pret: 4, am_acasa: false, notite: "" },
+                { nume: "Cola (bax)", cantitate: 0.07, unitate: "bax", pret: 25, am_acasa: false, notite: "" },
+                { nume: "Schweppes", cantitate: 0.32, unitate: "buc", pret: 5, am_acasa: false, notite: "" },
+                { nume: "Apă (bidon 5L)", cantitate: 0.14, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
+                { nume: "Rom", cantitate: 0.2, unitate: "buc", pret: 35, am_acasa: false, notite: "" },
+                { nume: "Jägermeister", cantitate: 0.07, unitate: "buc", pret: 65, am_acasa: false, notite: "" },
+                { nume: "Tequila", cantitate: 0.03, unitate: "buc", pret: 45, am_acasa: false, notite: "" },
+                { nume: "Gin", cantitate: 0.2, unitate: "buc", pret: 40, am_acasa: false, notite: "" }
             ],
             condimente: [
-                { nume: "Pâine", cantitate_per_pers: 0.36, unitate: "buc", pret: 4, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Muștar (borcan)", cantitate_per_pers: 0.11, unitate: "buc", pret: 6, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Chipsuri/Semințe", cantitate_per_pers: 0.2, unitate: "buc", pret: 8, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Gheață", cantitate_per_pers: 0.3, unitate: "kg", pret: 5, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Carbuni (sac)", cantitate_per_pers: 0.1, unitate: "buc", pret: 25, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Farfurii (set 50)", cantitate_per_pers: 0.07, unitate: "set", pret: 15, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Pahare (set 50)", cantitate_per_pers: 0.07, unitate: "set", pret: 12, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Role bucătărie", cantitate_per_pers: 0.14, unitate: "buc", pret: 8, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" },
-                { nume: "Saci gunoi mari", cantitate_per_pers: 0.14, unitate: "buc", pret: 12, profil: "normal", timp_preparare: 0, am_acasa: false, notite: "" }
+                { nume: "Pâine", cantitate: 0.36, unitate: "buc", pret: 4, am_acasa: false, notite: "" },
+                { nume: "Muștar (borcan)", cantitate: 0.11, unitate: "buc", pret: 6, am_acasa: false, notite: "" },
+                { nume: "Chipsuri/Semințe", cantitate: 0.2, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
+                { nume: "Gheață", cantitate: 0.3, unitate: "kg", pret: 5, am_acasa: false, notite: "" },
+                { nume: "Carbuni (sac)", cantitate: 0.1, unitate: "buc", pret: 25, am_acasa: false, notite: "" },
+                { nume: "Farfurii (set 50)", cantitate: 0.07, unitate: "set", pret: 15, am_acasa: false, notite: "" },
+                { nume: "Pahare (set 50)", cantitate: 0.07, unitate: "set", pret: 12, am_acasa: false, notite: "" },
+                { nume: "Role bucătărie", cantitate: 0.14, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
+                { nume: "Saci gunoi mari", cantitate: 0.14, unitate: "buc", pret: 12, am_acasa: false, notite: "" }
             ]
         };
 
-        const profilMultiplicatori = {
-            normal: 1,
-            mancacios: 1.5,
-            vegetarian: 0.5,
-            copil: 0.6
-        };
-
-        function calculeazaCantitate(cantitate_per_pers, nr_persoane, profil) {
-            const multiplicator = profilMultiplicatori[profil] || 1;
-            const total = cantitate_per_pers * nr_persoane * multiplicator;
+        // Multiplicatorul de profil a fost eliminat complet. Acum cantitatea per persoana * nr_persoane
+        function calculeazaCantitateTotala(cantitate_per_pers, nr_persoane) {
+            const total = cantitate_per_pers * nr_persoane;
             // Rotunjire în sus pentru a asigura suficiente produse, cu 2 zecimale pentru valori sub 1
-            return total < 1 ? total.toFixed(2) : Math.ceil(total * 10) / 10;
+            return total < 1 ? total.toFixed(2) : Math.ceil(total * 100) / 100; // Rotunjire la 2 zecimale pt numere mari
         }
 
         function actualizeazaTabela(tabelId, produse_categorie, categoria) {
@@ -494,24 +466,15 @@
             tbody.innerHTML = '';
 
             produse_categorie.forEach((produs, index) => {
-                const cantitateCalculata = calculeazaCantitate(produs.cantitate_per_pers, nr_persoane, produs.profil);
+                const cantitateCalculata = calculeazaCantitateTotala(produs.cantitate, nr_persoane);
                 const totalProdus = (cantitateCalculata * produs.pret).toFixed(2);
 
                 const row = tbody.insertRow();
                 row.innerHTML = `
                     <td><input type="text" class="editable-input" value="${produs.nume}" onchange="actualizeazaProprietate('${categoria}', ${index}, 'nume', this.value)"></td>
-                    <td><input type="number" class="quantity-input" value="${produs.cantitate_per_pers}" step="0.01" onchange="actualizeazaProprietate('${categoria}', ${index}, 'cantitate_per_pers', parseFloat(this.value) || 0)"></td>
-                    <td>
-                        <select class="profile-select" onchange="actualizeazaProprietate('${categoria}', ${index}, 'profil', this.value)">
-                            <option value="normal" ${produs.profil === 'normal' ? 'selected' : ''}>Normal</option>
-                            <option value="mancacios" ${produs.profil === 'mancacios' ? 'selected' : ''}>Mâncăcios</option>
-                            <option value="vegetarian" ${produs.profil === 'vegetarian' ? 'selected' : ''}>Vegetarian</option>
-                            <option value="copil" ${produs.profil === 'copil' ? 'selected' : ''}>Copil</option>
-                        </select>
-                    </td>
+                    <td><input type="number" class="quantity-input" value="${produs.cantitate}" step="0.01" onchange="actualizeazaProprietate('${categoria}', ${index}, 'cantitate', parseFloat(this.value) || 0)"></td>
                     <td><input type="text" class="editable-input" value="${produs.unitate}" onchange="actualizeazaProprietate('${categoria}', ${index}, 'unitate', this.value)"></td>
                     <td><input type="number" class="price-input" value="${produs.pret}" step="0.01" onchange="actualizeazaProprietate('${categoria}', ${index}, 'pret', parseFloat(this.value) || 0)"></td>
-                    <td><input type="number" class="time-input" value="${produs.timp_preparare}" min="0" onchange="actualizeazaProprietate('${categoria}', ${index}, 'timp_preparare', parseInt(this.value) || 0)"></td>
                     <td><input type="checkbox" onchange="actualizeazaProprietate('${categoria}', ${index}, 'am_acasa', this.checked)" ${produs.am_acasa ? 'checked' : ''}></td>
                     <td><input type="text" class="notes-input" value="${produs.notite}" onchange="actualizeazaProprietate('${categoria}', ${index}, 'notite', this.value)"></td>
                     <td class="total-price">${totalProdus} LEI</td>
@@ -526,14 +489,12 @@
         }
 
         function adaugaProdus(categoria) {
-            const profilInitial = document.getElementById('profilInitial').value;
+            // Profilul inițial a fost eliminat, noul produs are cantitatea direct
             const produs = {
                 nume: "Produs nou",
-                cantitate_per_pers: 0.1,
+                cantitate: 0.1, // Cantitate per persoana
                 unitate: "buc",
                 pret: 1,
-                profil: profilInitial,
-                timp_preparare: 0,
                 am_acasa: false,
                 notite: ""
             };
@@ -555,7 +516,7 @@
             Object.values(produse).forEach(categorie => {
                 categorie.forEach(produs => {
                     if (!produs.am_acasa) { // Include doar produsele care nu sunt "acasă"
-                        const cantitateCalculata = calculeazaCantitate(produs.cantitate_per_pers, nr_persoane, produs.profil);
+                        const cantitateCalculata = calculeazaCantitateTotala(produs.cantitate, nr_persoane);
                         total += cantitateCalculata * produs.pret;
                     }
                 });
@@ -598,7 +559,7 @@
             actualizeazaTabela(categoria + 'Table', produse[categoria], categoria);
         }
 
-        // Noua funcție pentru salvarea planului ca imagine
+        // Funcția pentru salvarea planului ca imagine
         function salveazaPlanCaImagine() {
             const element = document.getElementById('gratarPlanContainer'); // Elementul pe care vrei să-l capturezi
 
@@ -627,7 +588,7 @@
             });
         }
 
-        // Noua funcție pentru generarea și descărcarea listei de cumpărături
+        // Funcția pentru generarea și descărcarea listei de cumpărături
         function genereazaListaCumparaturiSiDescarca() {
             const nr_persoane = parseInt(document.getElementById('persoane').value) || 0;
             const lista = {};
@@ -638,7 +599,7 @@
             Object.values(produse).forEach(categorie => {
                 categorie.forEach(produs => {
                     if (!produs.am_acasa) { // Doar ce nu e deja "acasă"
-                        const cantitateNecesara = parseFloat(calculeazaCantitate(produs.cantitate_per_pers, nr_persoane, produs.profil));
+                        const cantitateNecesara = parseFloat(calculeazaCantitateTotala(produs.cantitate, nr_persoane));
                         const pretTotalProdus = cantitateNecesara * produs.pret;
 
                         if (lista[produs.nume]) {
