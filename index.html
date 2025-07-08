@@ -287,6 +287,139 @@
             width: 100px; /* Lățime ajustată */
             text-align: center;
         }
+
+        /* Stiluri pentru modal (pop-up) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .modal-content input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .modal-content button {
+            background: #5cb85c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 1em;
+            transition: background 0.3s ease;
+        }
+
+        .modal-content button:hover {
+            background: #4cae4c;
+        }
+
+        .modal-content .close-button {
+            background: #f44336;
+        }
+        .modal-content .close-button:hover {
+            background: #da190b;
+        }
+
+        /* Stiluri pentru Istoric Planuri Salvate */
+        .history-section {
+            background: #eceff1;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-top: 30px;
+        }
+
+        .history-section h3 {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #cfd8dc;
+        }
+
+        #savedPlansList {
+            list-style: none;
+            padding: 0;
+        }
+
+        #savedPlansList li {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            flex-wrap: wrap; /* Permite elementelor să se așeze pe rândul următor pe ecrane mici */
+        }
+
+        #savedPlansList li span {
+            font-weight: bold;
+            color: #333;
+            flex-grow: 1; /* Permite numelui să ocupe spațiu */
+            margin-right: 10px;
+            white-space: normal; /* Permite textului să se încadreze */
+        }
+
+        #savedPlansList li .history-actions button {
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            margin-left: 8px;
+        }
+
+        #savedPlansList li .history-actions .load-btn {
+            background: #007bff;
+        }
+        #savedPlansList li .history-actions .load-btn:hover {
+            background: #0056b3;
+        }
+
+        #savedPlansList li .history-actions .download-csv-btn {
+            background: #ffc107; /* Galben */
+            color: #333;
+        }
+        #savedPlansList li .history-actions .download-csv-btn:hover {
+            background: #e0a800;
+        }
+
+        #savedPlansList li .history-actions .delete-btn {
+            background: #dc3545;
+        }
+        #savedPlansList li .history-actions .delete-btn:hover {
+            background: #c82333;
+        }
     </style>
 </head>
 <body>
@@ -297,6 +430,8 @@
             <div class="action-buttons">
                 <button onclick="salveazaPlanCaImagine()">📸 Salvează Plan (Imagine)</button>
                 <button onclick="genereazaListaCumparaturiSiDescarca()">🛒 Generează Listă Cumpărături</button>
+                <button onclick="exportaPlanCurentCSV()">📊 Exportă Plan Curent (CSV)</button>
+                <button onclick="deschideModalSalvarePlan()">💾 Salvează Plan în Istoric</button>
             </div>
         </div>
 
@@ -407,26 +542,43 @@
                     </div>
                 </div>
             </div>
+
+            <div class="history-section">
+                <h3>📚 Istoric Planuri Salvate</h3>
+                <ul id="savedPlansList">
+                    </ul>
+                <p id="noPlansMessage" style="text-align: center; color: #666;">Nu există planuri salvate. Salvează unul acum!</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="savePlanModal" class="modal">
+        <div class="modal-content">
+            <h2>Salvează Planul</h2>
+            <p>Introdu un nume pentru acest plan:</p>
+            <input type="text" id="planNameInput" placeholder="Numele planului (ex: Grătar Aniversar)">
+            <button onclick="salveazaPlanInLocalStorage()">Salvează</button>
+            <button class="close-button" onclick="inchideModalSalvarePlan()">Anulează</button>
         </div>
     </div>
 
     <script>
         let produse = {
             carne: [
-                { nume: "Mici", cantitate: 2, unitate: "kg", pret: 25, am_acasa: false, notite: "" }, // 2 kg de mici, preț/kg 25 RON
-                { nume: "Ceafă de porc", cantitate: 1, unitate: "buc", pret: 50, am_acasa: false, notite: "Bucată de 1 kg" }, // 1 bucată, preț/buc 50 RON
+                { nume: "Mici", cantitate: 2, unitate: "kg", pret: 25, am_acasa: false, notite: "" },
+                { nume: "Ceafă de porc", cantitate: 1, unitate: "buc", pret: 50, am_acasa: false, notite: "Bucată de 1 kg" },
                 { nume: "Pulpe dezosate de pui", cantitate: 1.5, unitate: "kg", pret: 16, am_acasa: false, notite: "" },
                 { nume: "Cârnați de porc", cantitate: 1, unitate: "kg", pret: 18, am_acasa: false, notite: "" }
             ],
             legume: [
                 { nume: "Ceapă", cantitate: 0.5, unitate: "kg", pret: 4, am_acasa: false, notite: "" },
                 { nume: "Ciuperci brune", cantitate: 1, unitate: "caserola", pret: 12, am_acasa: false, notite: "" },
-                { nume: "Lămâi", cantitate: 3, unitate: "buc", pret: 2, am_acasa: false, notite: "" }, // 3 bucăți, preț/buc 2 RON
+                { nume: "Lămâi", cantitate: 3, unitate: "buc", pret: 2, am_acasa: false, notite: "" },
                 { nume: "Lime", cantitate: 2, unitate: "buc", pret: 3, am_acasa: false, notite: "" },
                 { nume: "Portocale", cantitate: 1, unitate: "kg", pret: 6, am_acasa: false, notite: "" }
             ],
             bauturi: [
-                { nume: "Bere", cantitate: 3, unitate: "bax", pret: 35, am_acasa: false, notite: "" }, // 3 baxuri, preț/bax 35 RON
+                { nume: "Bere", cantitate: 3, unitate: "bax", pret: 35, am_acasa: false, notite: "" },
                 { nume: "Bere fără alcool", cantitate: 6, unitate: "buc", pret: 4, am_acasa: false, notite: "" },
                 { nume: "Cola", cantitate: 1, unitate: "bax", pret: 25, am_acasa: false, notite: "" },
                 { nume: "Apă (5L)", cantitate: 2, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
@@ -437,7 +589,7 @@
                 { nume: "Muștar", cantitate: 1, unitate: "borcan", pret: 6, am_acasa: false, notite: "" },
                 { nume: "Chipsuri/Semințe", cantitate: 3, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
                 { nume: "Gheață", cantitate: 2, unitate: "kg", pret: 5, am_acasa: false, notite: "" },
-                { nume: "Carbuni", cantitate: 1, unitate: "sac", pret: 25, am_acasa: false, notite: "" }, // 1 sac, preț/sac 25 RON
+                { nume: "Carbuni", cantitate: 1, unitate: "sac", pret: 25, am_acasa: false, notite: "" },
                 { nume: "Farfurii", cantitate: 1, unitate: "set", pret: 15, am_acasa: false, notite: "Set de 50 buc" },
                 { nume: "Pahare", cantitate: 1, unitate: "set", pret: 12, am_acasa: false, notite: "Set de 50 buc" },
                 { nume: "Role bucătărie", cantitate: 1, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
@@ -534,6 +686,7 @@
             actualizeazaTabela('bauturiTable', produse.bauturi, 'bauturi');
             actualizeazaTabela('condimenteTable', produse.condimente, 'condimente');
             actualizeazaBuget();
+            // Nu mai actualizăm istoricul aici, ci doar la salvare/ștergere
         }
 
         function sorteazaTabel(categoria, cheie) {
@@ -548,14 +701,13 @@
 
         // Funcția pentru salvarea planului ca imagine
         function salveazaPlanCaImagine() {
-            const element = document.getElementById('gratarPlanContainer'); // Elementul pe care vrei să-l capturezi
+            const element = document.getElementById('gratarPlanContainer');
 
-            // Opțiuni pentru html2canvas (opțional, pentru control mai fin)
             const options = {
-                scale: 4, // Mărește rezoluția pentru o calitate mai bună a imaginii
-                useCORS: true, // Permite încărcarea imaginilor din surse externe, dacă există
-                logging: false, // Dezactivează log-urile în consolă
-                backgroundColor: '#f8f9fa' // Setează o culoare de fundal explicită
+                scale: 2, // Mărește rezoluția pentru o calitate mai bună a imaginii
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#f8f9fa'
             };
 
             html2canvas(element, options).then(canvas => {
@@ -575,19 +727,19 @@
             });
         }
 
-        // Funcția pentru generarea și descărcarea listei de cumpărături
+        // Funcția pentru generarea și descărcarea listei de cumpărături (TXT)
         function genereazaListaCumparaturiSiDescarca() {
-            const nr_persoane = parseInt(document.getElementById('persoane').value) || 0; // Păstrăm numărul de persoane, poate e util pentru notițe
+            const nr_persoane = parseInt(document.getElementById('persoane').value) || 0;
 
             const lista = {};
             let totalLista = 0;
             let outputText = "--- Lista de Cumpărături Grătar ---\n\n";
-            outputText += `Număr persoane estimate: ${nr_persoane}\n\n`; // Păstrăm informația despre numărul de persoane
+            outputText += `Număr persoane estimate: ${nr_persoane}\n\n`;
 
             Object.values(produse).forEach(categorie => {
                 categorie.forEach(produs => {
-                    if (!produs.am_acasa) { // Doar ce nu e deja "acasă"
-                        const cantitateNecesara = produs.cantitate; // Acum cantitatea e fixă
+                    if (!produs.am_acasa) {
+                        const cantitateNecesara = produs.cantitate;
                         const pretTotalProdus = cantitateNecesara * produs.pret;
 
                         if (lista[produs.nume]) {
@@ -598,7 +750,7 @@
                                 cantitate: cantitateNecesara,
                                 unitate: produs.unitate,
                                 pretTotal: pretTotalProdus,
-                                notite: produs.notite // Păstrăm notițele
+                                notite: produs.notite
                             };
                         }
                         totalLista += pretTotalProdus;
@@ -606,11 +758,10 @@
                 });
             });
 
-            // Adaugă produsele la textul final
             for (const numeProdus in lista) {
                 const item = lista[numeProdus];
                 outputText += `- ${numeProdus}: ${item.cantitate.toFixed(2)} ${item.unitate} (${item.pretTotal.toFixed(2)} RON)\n`;
-                if (item.notite) { // Adaugă notițele dacă există
+                if (item.notite) {
                     outputText += `  (Notițe: ${item.notite})\n`;
                 }
             }
@@ -619,7 +770,6 @@
             outputText += `Total estimat pentru cumpărături: ${totalLista.toFixed(2)} RON\n`;
             outputText += `--------------------------------------\n`;
 
-            // Creează și descarcă fișierul text
             const blob = new Blob([outputText], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -633,13 +783,190 @@
             URL.revokeObjectURL(url);
         }
 
+        // Functii pentru Istoric Planuri si CSV
+        const LOCAL_STORAGE_KEY = 'gratar_planuri_salvate';
+
+        function deschideModalSalvarePlan() {
+            document.getElementById('savePlanModal').style.display = 'flex';
+            document.getElementById('planNameInput').value = ''; // Golește inputul
+            document.getElementById('planNameInput').focus(); // Pune focus pe input
+        }
+
+        function inchideModalSalvarePlan() {
+            document.getElementById('savePlanModal').style.display = 'none';
+        }
+
+        function salveazaPlanInLocalStorage() {
+            const planName = document.getElementById('planNameInput').value.trim();
+            if (!planName) {
+                alert('Te rog introdu un nume pentru plan!');
+                return;
+            }
+
+            const savedPlans = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
+            const timestamp = new Date().toISOString();
+
+            const currentPlanState = {
+                name: planName,
+                date: new Date().toLocaleString('ro-RO'),
+                timestamp: timestamp,
+                persoane: parseInt(document.getElementById('persoane').value) || 0,
+                buget: parseFloat(document.getElementById('buget').value) || 0,
+                produse: JSON.parse(JSON.stringify(produse)) // Clonăm obiectul produse
+            };
+
+            savedPlans.push(currentPlanState);
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedPlans));
+            inchideModalSalvarePlan();
+            afiseazaPlanuriSalvate();
+            alert(`Planul "${planName}" a fost salvat!`);
+        }
+
+        function afiseazaPlanuriSalvate() {
+            const savedPlans = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
+            const listElement = document.getElementById('savedPlansList');
+            const noPlansMessage = document.getElementById('noPlansMessage');
+            listElement.innerHTML = '';
+
+            if (savedPlans.length === 0) {
+                noPlansMessage.style.display = 'block';
+                return;
+            } else {
+                noPlansMessage.style.display = 'none';
+            }
+
+            savedPlans.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // Sortează de la cel mai nou la cel mai vechi
+
+            savedPlans.forEach((plan, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${plan.name} <br> <small>${plan.date}</small></span>
+                    <div class="history-actions">
+                        <button class="load-btn" onclick="incarcaPlan('${plan.timestamp}')">Încarcă</button>
+                        <button class="download-csv-btn" onclick="exportaPlanCSV('${plan.timestamp}')">Descărcare CSV</button>
+                        <button class="delete-btn" onclick="stergePlan('${plan.timestamp}')">Șterge</button>
+                    </div>
+                `;
+                listElement.appendChild(li);
+            });
+        }
+
+        function incarcaPlan(timestamp) {
+            const savedPlans = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
+            const planToLoad = savedPlans.find(p => p.timestamp === timestamp);
+
+            if (planToLoad && confirm(`Sigur vrei să încarci planul "${planToLoad.name}"? Modificările curente nesalvate se vor pierde.`)) {
+                document.getElementById('persoane').value = planToLoad.persoane;
+                document.getElementById('buget').value = planToLoad.buget;
+                produse = JSON.parse(JSON.stringify(planToLoad.produse)); // Reîncarcă produsele
+                actualizeazaToate();
+                alert(`Planul "${planToLoad.name}" a fost încărcat!`);
+            }
+        }
+
+        function stergePlan(timestamp) {
+            if (confirm('Sigur vrei să ștergi acest plan din istoric?')) {
+                let savedPlans = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
+                savedPlans = savedPlans.filter(p => p.timestamp !== timestamp);
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedPlans));
+                afiseazaPlanuriSalvate();
+                alert('Plan șters din istoric.');
+            }
+        }
+
+        // Funcția care generează conținutul CSV
+        function generateCSVContent(planData) {
+            let csvContent = "";
+
+            // Antetul CSV
+            const headers = ["Categorie", "Produs", "Cantitate", "Unitate", "Pret/Unitate (RON)", "Am Acasa", "Notite", "Total (RON)"];
+            csvContent += headers.join(",") + "\n"; // Folosim virgula ca separator
+
+            // Adaugă datele pentru fiecare categorie
+            for (const category in planData.produse) {
+                planData.produse[category].forEach(produs => {
+                    const totalProdus = (produs.cantitate * produs.pret).toFixed(2);
+                    const row = [
+                        category,
+                        `"${produs.nume.replace(/"/g, '""')}"`, // Înlocuiește ghilimelele duble cu două ghilimele duble pentru a le escapa
+                        produs.cantitate,
+                        produs.unitate,
+                        produs.pret,
+                        produs.am_acasa ? "Da" : "Nu",
+                        `"${produs.notite.replace(/"/g, '""')}"`,
+                        totalProdus
+                    ];
+                    csvContent += row.join(",") + "\n";
+                });
+            }
+
+            // Adaugă sumarul bugetului la final (opțional, dar util)
+            csvContent += "\n\n";
+            csvContent += "Sumar Buget\n";
+            csvContent += `Numar persoane:,${planData.persoane}\n`;
+            csvContent += `Buget total:,${planData.buget.toFixed(2)} RON\n`;
+            const totalCheltuieli = Object.values(planData.produse).flat().reduce((sum, p) => sum + (p.am_acasa ? 0 : p.cantitate * p.pret), 0);
+            csvContent += `Total cheltuieli (est. necesar):,${totalCheltuieli.toFixed(2)} RON\n`;
+            csvContent += `Bani ramasi:,${(planData.buget - totalCheltuieli).toFixed(2)} RON\n`;
+
+            return csvContent;
+        }
+
+        // Funcția pentru exportul planului curent în CSV
+        function exportaPlanCurentCSV() {
+            const currentPlanState = {
+                name: "Plan Curent", // Nume generic pentru exportul curent
+                date: new Date().toLocaleString('ro-RO'),
+                persoane: parseInt(document.getElementById('persoane').value) || 0,
+                buget: parseFloat(document.getElementById('buget').value) || 0,
+                produse: JSON.parse(JSON.stringify(produse))
+            };
+            const csv = generateCSVContent(currentPlanState);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const date = new Date();
+            const filename = `plan_gratar_curent_${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}.csv`;
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert('Planul curent a fost exportat în CSV!');
+        }
+
+        // Funcția pentru exportul unui plan din istoric în CSV
+        function exportaPlanCSV(timestamp) {
+            const savedPlans = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
+            const planToExport = savedPlans.find(p => p.timestamp === timestamp);
+
+            if (planToExport) {
+                const csv = generateCSVContent(planToExport);
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const filename = `plan_gratar_${planToExport.name.replace(/[^a-z0-9]/gi, '_')}_${new Date(planToExport.timestamp).toLocaleDateString('ro-RO').replace(/\./g, '-')}.csv`;
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                alert(`Planul "${planToExport.name}" a fost exportat în CSV!`);
+            } else {
+                alert('Eroare: Planul nu a fost găsit în istoric.');
+            }
+        }
+
+
         // Event listeners
-        // Numărul de persoane influențează doar sumarul și notițele, nu cantitățile produselor
         document.getElementById('persoane').addEventListener('input', actualizeazaBuget);
         document.getElementById('buget').addEventListener('input', actualizeazaBuget);
 
         // Inițializare
         actualizeazaToate();
+        afiseazaPlanuriSalvate(); // Afișează planurile salvate la încărcarea paginii
     </script>
 </body>
 </html>
