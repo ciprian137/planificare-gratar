@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificator grătar</title>
+    <title>Calculator Grătar - Planificator Avansat</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -113,7 +113,6 @@
             box-shadow: 0 0 0 3px rgba(106, 130, 251, 0.2);
         }
 
-        /* Modificări pentru a afișa tabelele unul sub altul */
         .tables-grid-container {
             display: grid;
             grid-template-columns: 1fr; /* Doar o singură coloană */
@@ -210,7 +209,7 @@
         .quantity-input,
         .profile-select,
         .time-input,
-        .notes-input { /* Adăugat .notes-input */
+        .notes-input {
             width: calc(100% - 8px);
             padding: 4px;
             border: 1px solid #ddd;
@@ -294,76 +293,53 @@
             text-align: center;
         }
 
-        /* Modal styling */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1000; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: auto;
-            padding: 30px;
+        /* Stiluri pentru lista de cumpărături integrată */
+        #shoppingListSection {
+            background: #eceff1; /* Gri foarte deschis */
+            padding: 20px;
             border-radius: 10px;
-            width: 80%; /* Could be more or less, depending on screen size */
-            max-width: 600px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            position: relative;
-            color: #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-top: 30px;
+            display: none; /* Ascuns inițial */
         }
 
-        .modal-content h2 {
+        #shoppingListSection h3 {
             margin-top: 0;
             color: #333;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
+            text-align: center;
+            font-size: 1.5em;
             margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #cfd8dc;
         }
 
-        .modal-content ul {
+        #shoppingListContent {
             list-style: none;
             padding: 0;
-            max-height: 400px; /* Scroll for long lists */
+            margin: 0;
+            max-height: 400px; /* Scroll pentru liste lungi */
             overflow-y: auto;
-            margin-bottom: 20px;
         }
 
-        .modal-content li {
-            padding: 8px 0;
-            border-bottom: 1px dashed #eee;
+        #shoppingListContent li {
+            padding: 10px 0;
+            border-bottom: 1px dashed #cfd8dc;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            color: #333;
         }
-        .modal-content li:last-child {
+
+        #shoppingListContent li:last-child {
             border-bottom: none;
         }
 
-        .modal-content .close-button {
-            color: #aaa;
-            position: absolute;
-            top: 15px;
-            right: 25px;
-            font-size: 28px;
+        #shoppingListSection p {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 1.2em;
             font-weight: bold;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .modal-content .close-button:hover,
-        .modal-content .close-button:focus {
-            color: #000;
-            text-decoration: none;
+            color: #27ae60;
         }
     </style>
 </head>
@@ -505,15 +481,12 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div id="shoppingListModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeModal('shoppingListModal')">&times;</span>
-            <h2>Lista de Cumpărături</h2>
-            <ul id="shoppingListContent"></ul>
-            <p><strong>Total estimat pentru cumpărături: <span id="shoppingListTotal">0.00 LEI</span></strong></p>
+            <div id="shoppingListSection">
+                <h3>🛒 Lista de Cumpărături</h3>
+                <ul id="shoppingListContent"></ul>
+                <p><strong>Total estimat pentru cumpărături: <span id="shoppingListTotal">0.00 LEI</span></strong></p>
+            </div>
         </div>
     </div>
 
@@ -669,6 +642,8 @@
             actualizeazaTabela('bauturiTable', produse.bauturi, 'bauturi');
             actualizeazaTabela('condimenteTable', produse.condimente, 'condimente');
             actualizeazaBuget();
+            // Ascunde lista de cumpărături la orice actualizare a tabelelor
+            document.getElementById('shoppingListSection').style.display = 'none';
         }
 
         function sorteazaTabel(categoria, cheie) {
@@ -782,7 +757,7 @@
             });
 
             const shoppingListContent = document.getElementById('shoppingListContent');
-            shoppingListContent.innerHTML = ''; // Clear previous list
+            shoppingListContent.innerHTML = ''; // Golește lista anterioară
 
             for (const numeProdus in lista) {
                 const item = lista[numeProdus];
@@ -794,11 +769,7 @@
                 shoppingListContent.appendChild(li);
             }
             document.getElementById('shoppingListTotal').textContent = `${totalLista.toFixed(2)} LEI`;
-            document.getElementById('shoppingListModal').style.display = 'flex'; // Show modal
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
+            document.getElementById('shoppingListSection').style.display = 'block'; // Afișează secțiunea listei de cumpărături
         }
 
         // Event listeners
