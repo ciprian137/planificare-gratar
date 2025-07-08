@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planificator grătar</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -292,68 +293,16 @@
             width: 100px; /* Lățime ajustată */
             text-align: center;
         }
-
-        /* Stiluri pentru lista de cumpărături integrată */
-        #shoppingListSection {
-            background: #eceff1; /* Gri foarte deschis */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            margin-top: 30px;
-            display: none; /* Ascuns inițial */
-        }
-
-        #shoppingListSection h3 {
-            margin-top: 0;
-            color: #333;
-            text-align: center;
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #cfd8dc;
-        }
-
-        #shoppingListContent {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            max-height: 400px; /* Scroll pentru liste lungi */
-            overflow-y: auto;
-        }
-
-        #shoppingListContent li {
-            padding: 10px 0;
-            border-bottom: 1px dashed #cfd8dc;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #333;
-        }
-
-        #shoppingListContent li:last-child {
-            border-bottom: none;
-        }
-
-        #shoppingListSection p {
-            margin-top: 20px;
-            text-align: right;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #27ae60;
-        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="gratarPlanContainer">
         <div class="header">
-            <h1>🥩 Planificator pentru grătar 🥗</h1>
-            <p>Distrează-te vere și fă-ți singur grătarul!</p>
+            <h1>🥩 Planificator de grătar 🥗</h1>
+            <p>Să-ți faci propriu grătar vere!</p>
             <div class="action-buttons">
-                <button onclick="salveazaPlan()">💾 Salvează Plan</button>
-                <button onclick="incarcaPlan()">📂 Încarcă Plan</button>
-                <button onclick="exportaJSON()">📤 Exportă JSON</button>
-                <button onclick="importaJSON()">📥 Importă JSON</button>
-                <button onclick="genereazaListaCumparaturi()">🛒 Generează Listă de Cumpărături</button>
+                <button onclick="salveazaPlanCaImagine()">📸 Salvează Plan (Imagine)</button>
+                <button onclick="genereazaListaCumparaturiSiDescarca()">🛒 Generează Listă Cumpărături</button>
             </div>
         </div>
 
@@ -481,12 +430,6 @@
                     </div>
                 </div>
             </div>
-
-            <div id="shoppingListSection">
-                <h3>🛒 Lista de Cumpărături</h3>
-                <ul id="shoppingListContent"></ul>
-                <p><strong>Total estimat pentru cumpărături: <span id="shoppingListTotal">0.00 LEI</span></strong></p>
-            </div>
         </div>
     </div>
 
@@ -539,6 +482,7 @@
         function calculeazaCantitate(cantitate_per_pers, nr_persoane, profil) {
             const multiplicator = profilMultiplicatori[profil] || 1;
             const total = cantitate_per_pers * nr_persoane * multiplicator;
+            // Rotunjire în sus pentru a asigura suficiente produse, cu 2 zecimale pentru valori sub 1
             return total < 1 ? total.toFixed(2) : Math.ceil(total * 10) / 10;
         }
 
@@ -642,8 +586,6 @@
             actualizeazaTabela('bauturiTable', produse.bauturi, 'bauturi');
             actualizeazaTabela('condimenteTable', produse.condimente, 'condimente');
             actualizeazaBuget();
-            // Ascunde lista de cumpărături la orice actualizare a tabelelor
-            document.getElementById('shoppingListSection').style.display = 'none';
         }
 
         function sorteazaTabel(categoria, cheie) {
@@ -656,89 +598,47 @@
             actualizeazaTabela(categoria + 'Table', produse[categoria], categoria);
         }
 
-        function salveazaPlan() {
-            const dataToSave = {
-                persoane: document.getElementById('persoane').value,
-                buget: document.getElementById('buget').value,
-                produse: produse
+        // Noua funcție pentru salvarea planului ca imagine
+        function salveazaPlanCaImagine() {
+            const element = document.getElementById('gratarPlanContainer'); // Elementul pe care vrei să-l capturezi
+
+            // Opțiuni pentru html2canvas (opțional, pentru control mai fin)
+            const options = {
+                scale: 2, // Mărește rezoluția pentru o calitate mai bună a imaginii
+                useCORS: true, // Permite încărcarea imaginilor din surse externe, dacă există
+                logging: false, // Dezactivează log-urile în consolă
+                backgroundColor: '#f8f9fa' // Setează o culoare de fundal explicită
             };
-            localStorage.setItem('gratarPlan', JSON.stringify(dataToSave));
-            alert('Planul a fost salvat local!');
+
+            html2canvas(element, options).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const a = document.createElement('a');
+                const date = new Date();
+                const filename = `plan_gratar_${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}_${date.getHours().toString().padStart(2, '0')}${date.getMinutes().toString().padStart(2, '0')}.png`;
+                a.href = imgData;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                alert('Planul a fost salvat ca imagine!');
+            }).catch(error => {
+                console.error('Eroare la salvarea imaginii:', error);
+                alert('A apărut o eroare la salvarea planului ca imagine. Te rog să încerci din nou.');
+            });
         }
 
-        function incarcaPlan() {
-            const savedData = localStorage.getItem('gratarPlan');
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                document.getElementById('persoane').value = data.persoane;
-                document.getElementById('buget').value = data.buget;
-                produse = data.produse;
-                actualizeazaToate();
-                alert('Planul a fost încărcat din stocarea locală!');
-            } else {
-                alert('Nu s-a găsit niciun plan salvat local.');
-            }
-        }
-
-        function exportaJSON() {
-            const dataToExport = {
-                persoane: document.getElementById('persoane').value,
-                buget: document.getElementById('buget').value,
-                produse: produse
-            };
-            const filename = `plan_gratar_${new Date().toISOString().slice(0, 10)}.json`;
-            const jsonStr = JSON.stringify(dataToExport, null, 2);
-            const blob = new Blob([jsonStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function importaJSON() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'application/json';
-            input.onchange = e => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = event => {
-                        try {
-                            const importedData = JSON.parse(event.target.result);
-                            if (importedData.persoane && importedData.buget && importedData.produse) {
-                                document.getElementById('persoane').value = importedData.persoane;
-                                document.getElementById('buget').value = importedData.buget;
-                                produse = importedData.produse;
-                                actualizeazaToate();
-                                alert('Planul a fost importat cu succes!');
-                            } else {
-                                throw new Error('Fișier JSON invalid pentru planul de grătar.');
-                            }
-                        } catch (error) {
-                            alert('Eroare la importarea fișierului: ' + error.message);
-                            console.error(error);
-                        }
-                    };
-                    reader.readAsText(file);
-                }
-            };
-            input.click();
-        }
-
-        function genereazaListaCumparaturi() {
+        // Noua funcție pentru generarea și descărcarea listei de cumpărături
+        function genereazaListaCumparaturiSiDescarca() {
             const nr_persoane = parseInt(document.getElementById('persoane').value) || 0;
             const lista = {};
             let totalLista = 0;
+            let outputText = "--- Lista de Cumpărături Grătar ---\n\n";
+            outputText += `Număr persoane: ${nr_persoane}\n\n`;
 
             Object.values(produse).forEach(categorie => {
                 categorie.forEach(produs => {
                     if (!produs.am_acasa) { // Doar ce nu e deja "acasă"
-                        const cantitateNecesara = calculeazaCantitate(produs.cantitate_per_pers, nr_persoane, produs.profil);
+                        const cantitateNecesara = parseFloat(calculeazaCantitate(produs.cantitate_per_pers, nr_persoane, produs.profil));
                         const pretTotalProdus = cantitateNecesara * produs.pret;
 
                         if (lista[produs.nume]) {
@@ -756,20 +656,31 @@
                 });
             });
 
-            const shoppingListContent = document.getElementById('shoppingListContent');
-            shoppingListContent.innerHTML = ''; // Golește lista anterioară
-
+            // Adaugă produsele la textul final
             for (const numeProdus in lista) {
                 const item = lista[numeProdus];
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <span>${numeProdus}: <strong>${item.cantitate.toFixed(2)} ${item.unitate}</strong></span>
-                    <span>${item.pretTotal.toFixed(2)} LEI</span>
-                `;
-                shoppingListContent.appendChild(li);
+                outputText += `- ${numeProdus}: ${item.cantitate.toFixed(2)} ${item.unitate} (${item.pretTotal.toFixed(2)} LEI)\n`;
+                if (item.notite) { // Adaugă notițele dacă există
+                    outputText += `  (Notițe: ${item.notite})\n`;
+                }
             }
-            document.getElementById('shoppingListTotal').textContent = `${totalLista.toFixed(2)} LEI`;
-            document.getElementById('shoppingListSection').style.display = 'block'; // Afișează secțiunea listei de cumpărături
+
+            outputText += `\n--------------------------------------\n`;
+            outputText += `Total estimat pentru cumpărături: ${totalLista.toFixed(2)} LEI\n`;
+            outputText += `--------------------------------------\n`;
+
+            // Creează și descarcă fișierul text
+            const blob = new Blob([outputText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const date = new Date();
+            const filename = `lista_cumparaturi_gratar_${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}.txt`;
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
         // Event listeners
