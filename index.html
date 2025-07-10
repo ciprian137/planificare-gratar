@@ -252,6 +252,11 @@
             position: relative;
             overflow: hidden;
         }
+        th .sort-indicator {
+            margin-left: 5px;
+            font-size: 0.8em;
+            vertical-align: middle;
+        }
         th::before {
             content: '';
             position: absolute;
@@ -559,16 +564,6 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 18px rgba(52, 152, 219, 0.4);
         }
-        #savedPlansList li .history-actions .download-csv-btn {
-            background: linear-gradient(135deg, var(--warning-color), #e67e22);
-            color: var(--white);
-            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
-        }
-        #savedPlansList li .history-actions .download-csv-btn:hover {
-            background: linear-gradient(135deg, #e67e22, #d35400);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(243, 156, 18, 0.4);
-        }
         /* Category Manager Modal */
         #categoryManagerModal .modal-content {
             text-align: left;
@@ -582,8 +577,8 @@
         }
         #categoryManagerModal .category-list {
             margin-top: 25px;
-            max-height: 400px;
-            overflow-y: auto;
+            max-height: 400px; /* Added for scroll */
+            overflow-y: auto; /* Added for scroll */
             border: 2px solid #dee2e6;
             border-radius: 10px;
             padding: 15px;
@@ -685,11 +680,12 @@
             <h1>🔥 Calculator Grătar - Planificator Simplificat 🔥</h1>
             <p>Gestionează-ți lista de grătar în timp real și salvează-ți planurile!</p>
             <div class="action-buttons">
-                <button onclick="salveazaPlanCaImagine()">📸 Salvează Plan (Imagine)</button>
                 <button onclick="genereazaListaCumparaturiSiDescarca()">🛒 Generează Listă Cumpărături</button>
-                <button onclick="exportaPlanCurentCSV()">📊 Exportă Plan Curent (CSV)</button>
                 <button onclick="deschideModalSalvarePlan()">💾 Salvează Plan în Istoric</button>
                 <button onclick="deschideModalCategorii()">⚙️ Gestionează Categorii</button>
+                <button onclick="resetPlanCurent()">🔄 Resetează Plan</button>
+                <button id="undoBtn" onclick="undo()" disabled>↩ Anulează</button>
+                <button id="redoBtn" onclick="redo()" disabled>↪ Refă</button>
             </div>
         </div>
 
@@ -795,18 +791,83 @@
                 { nume: "Pahare", cantitate: 1, unitate: "set", pret: 12, am_acasa: false, notite: "" },
                 { nume: "Role bucătărie", cantitate: 1, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
                 { nume: "Saci gunoi mari", cantitate: 1, unitate: "buc", pret: 12, am_acasa: false, notite: "" }
-            ]
+            ],
+            diverse: [] // Categorie implicită pentru produse mutate sau orfane
         };
+
+        const DEFAULT_PERSONS = 28;
+        const DEFAULT_BUDGET = 1200;
+        const DEFAULT_CATEGORIES = ['carne', 'legume', 'bauturi', 'condimente', 'diverse'];
 
         // Variabile globale pentru starea curentă a aplicației
         let produse = {};
-        let currentPersons = 28;
-        let currentBudget = 1200;
+        let currentPersons = DEFAULT_PERSONS;
+        let currentBudget = DEFAULT_BUDGET;
 
-        const LOCAL_STORAGE_KEY_PLAN = 'gratar_plan_curent'; // Cheia pentru a salva planul curent (produse, persoane, buget)
-        const LOCAL_STORAGE_KEY_HISTORY = 'gratar_planuri_salvate'; // Cheia pentru istoric planuri
+        // Undo/Redo History
+        let historyStack = [];
+        let historyPointer = -1;
+        const MAX_HISTORY_STEPS = 20; // Limităm numărul de pași pentru a nu consuma prea multă memorie
 
-        // --- Funcții Utilitare pentru Stocare Locală ---
+        // Sorting state
+        let sortDirections = {}; // { 'categoryName': { 'columnName': 'asc' | 'desc' } }
+
+        const LOCAL_STORAGE_KEY_PLAN = 'gratar_plan_curent';
+        const LOCAL_STORAGE_KEY_HISTORY = 'gratar_planuri_salvate';
+
+        // --- Funcții Utilitare pentru Stocare Locală și Istoric ---
+
+        function saveStateForHistory() {
+            // Elimină stările mai noi dacă am făcut undo și acum facem o nouă modificare
+            if (historyPointer < historyStack.length - 1) {
+                historyStack = historyStack.slice(0, historyPointer + 1);
+            }
+
+            // Adaugă starea curentă în istoric
+            const currentState = {
+                produse: JSON.parse(JSON.stringify(produse)),
+                persoane: parseInt(document.getElementById('persoane').value) || 0,
+                buget: parseFloat(document.getElementById('buget').value) || 0
+            };
+            historyStack.push(currentState);
+
+            // Menține dimensiunea istoriei
+            if (historyStack.length > MAX_HISTORY_STEPS) {
+                historyStack.shift(); // Elimină cea mai veche stare
+            } else {
+                historyPointer++;
+            }
+            updateUndoRedoButtons();
+        }
+
+        function applyStateFromHistory(state) {
+            produse = JSON.parse(JSON.stringify(state.produse));
+            document.getElementById('persoane').value = state.persoane;
+            document.getElementById('buget').value = state.buget;
+            actualizeazaToate();
+            saveCurrentPlanToLocalStorage(); // Salvează starea curentă în local storage
+            updateUndoRedoButtons();
+        }
+
+        function undo() {
+            if (historyPointer > 0) {
+                historyPointer--;
+                applyStateFromHistory(historyStack[historyPointer]);
+            }
+        }
+
+        function redo() {
+            if (historyPointer < historyStack.length - 1) {
+                historyPointer++;
+                applyStateFromHistory(historyStack[historyPointer]);
+            }
+        }
+
+        function updateUndoRedoButtons() {
+            document.getElementById('undoBtn').disabled = historyPointer <= 0;
+            document.getElementById('redoBtn').disabled = historyPointer >= historyStack.length - 1;
+        }
+
         function saveCurrentPlanToLocalStorage() {
             const planState = {
                 produse: produse,
@@ -827,15 +888,28 @@
             } else {
                 // Initialize with default if no saved plan
                 produse = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS_STATE));
+                currentPersons = DEFAULT_PERSONS;
+                currentBudget = DEFAULT_BUDGET;
                 saveCurrentPlanToLocalStorage(); // Save defaults for next load
             }
 
-            // Ensure 'diverse' category exists if any products are left orphaned
+            // Ensure 'diverse' category exists if any products are left orphaned during old data loads
             if (!produse['diverse']) {
                 produse['diverse'] = [];
             }
         }
 
+        function resetPlanCurent() {
+            if (confirm('Ești sigur că vrei să resetezi planul curent? Toate produsele și setările vor fi șterse!')) {
+                produse = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS_STATE));
+                document.getElementById('persoane').value = DEFAULT_PERSONS;
+                document.getElementById('buget').value = DEFAULT_BUDGET;
+                saveCurrentPlanToLocalStorage();
+                saveStateForHistory(); // Salvează starea resetată în istoric
+                actualizeazaToate();
+                alert('Planul a fost resetat la valorile implicite.');
+            }
+        }
 
         // --- Funcții pentru Drag-and-Drop ---
         let draggingRow = null;
@@ -878,7 +952,6 @@
             event.target.closest('tbody')?.classList.remove('drag-over');
         }
 
-
         function handleDrop(event) {
             event.preventDefault();
             document.querySelectorAll('.drag-over, .drag-over-top').forEach(el => el.classList.remove('drag-over', 'drag-over-top'));
@@ -900,30 +973,23 @@
                 const rows = Array.from(targetTbodyElement.children);
                 targetIndex = rows.indexOf(targetRowElement);
 
-                // Adjust targetIndex if dropping above the target row
                 const rect = targetRowElement.getBoundingClientRect();
                 const y = event.clientY - rect.top;
-                if (y < rect.height / 2) {
-                    // Dropping before the target row
-                } else {
-                    // Dropping after the target row
+                if (y >= rect.height / 2) { // If dropping below the target row, increment index
                     targetIndex += 1;
                 }
             } else if (targetTbodyElement) {
-                targetCategory = targetTbodyElement.closest('.table-section').querySelector('h3').textContent.split(' ')[0].toLowerCase();
-                // Find the actual category name from the h3 element, removing the "Adaugă" button text.
-                // A more robust way would be to add a data-category attribute to the table-section.
-                const h3Text = targetTbodyElement.closest('.table-section').querySelector('h3').childNodes[0].textContent.trim();
-                targetCategory = h3Text.toLowerCase(); // Use the cleaned category name
+                // Find the actual category name from the h3 element of the parent .table-section
+                const h3TextElement = targetTbodyElement.closest('.table-section').querySelector('h3');
+                targetCategory = h3TextElement.childNodes[0].textContent.trim().toLowerCase(); // Get text before button
 
-                if (!produse[targetCategory]) { // If category doesn't exist yet, create it.
+                if (!produse[targetCategory]) {
                     produse[targetCategory] = [];
                 }
                 targetIndex = produse[targetCategory].length; // Drop at the end of the tbody
             }
 
             if (targetCategory === null || targetIndex === -1) {
-                // Invalid drop target
                 draggingRow.classList.remove('dragging');
                 draggingRow = null;
                 originalCategory = null;
@@ -931,12 +997,14 @@
             }
 
             if (sourceCategory === targetCategory) {
-                // Moving within the same category
                 const [movedProduct] = produse[sourceCategory].splice(sourceIndex, 1);
                 produse[targetCategory].splice(targetIndex, 0, movedProduct);
             } else {
-                // Moving between different categories
                 const [movedProduct] = produse[sourceCategory].splice(sourceIndex, 1);
+                // Make sure targetCategory exists, create if not
+                if (!produse[targetCategory]) {
+                    produse[targetCategory] = [];
+                }
                 produse[targetCategory].splice(targetIndex, 0, movedProduct);
             }
 
@@ -945,39 +1013,52 @@
             originalCategory = null;
 
             actualizeazaToate();
-            saveCurrentPlanToLocalStorage();
+            saveStateForHistory(); // Salvează starea după drag-and-drop
         }
 
         function attachDragDropListeners() {
             const allRows = document.querySelectorAll('tr[draggable="true"]');
             allRows.forEach(row => {
-                row.removeEventListener('dragstart', handleDragStart); // Remove old listeners to prevent duplicates
-                row.removeEventListener('dragover', handleDragOver);
-                row.removeEventListener('dragleave', handleDragLeave);
-                row.removeEventListener('drop', handleDrop);
-                row.removeEventListener('dragenter', (e) => e.preventDefault());
+                // Remove existing listeners to prevent duplicates
+                ['dragstart', 'dragover', 'dragleave', 'drop', 'dragenter'].forEach(event => {
+                    row.removeEventListener(event, row._dragEventHandler);
+                });
 
-                // Re-add with current context
+                // Attach new listeners
                 const category = row.dataset.category;
                 const index = parseInt(row.dataset.index);
-                row.addEventListener('dragstart', (e) => handleDragStart(e, category, index));
-                row.addEventListener('dragover', handleDragOver);
-                row.addEventListener('dragleave', handleDragLeave);
-                row.addEventListener('drop', handleDrop);
-                row.addEventListener('dragenter', (e) => e.preventDefault());
+
+                row._dragEventHandler = (e) => { // Store handler for removal
+                    if (e.type === 'dragstart') handleDragStart(e, category, index);
+                    else if (e.type === 'dragover') handleDragOver(e);
+                    else if (e.type === 'dragleave') handleDragLeave(e);
+                    else if (e.type === 'drop') handleDrop(e);
+                    else if (e.type === 'dragenter') e.preventDefault();
+                };
+
+                ['dragstart', 'dragover', 'dragleave', 'drop', 'dragenter'].forEach(event => {
+                    row.addEventListener(event, row._dragEventHandler);
+                });
             });
 
             const allTbodies = document.querySelectorAll('.table-section tbody');
             allTbodies.forEach(tbody => {
-                tbody.removeEventListener('dragover', handleDragOver); // Remove old listeners
-                tbody.removeEventListener('dragleave', handleDragLeave);
-                tbody.removeEventListener('drop', handleDrop);
-                tbody.removeEventListener('dragenter', (e) => e.preventDefault());
+                // Remove existing listeners to prevent duplicates
+                ['dragover', 'dragleave', 'drop', 'dragenter'].forEach(event => {
+                    tbody.removeEventListener(event, tbody._dragEventHandler);
+                });
 
-                tbody.addEventListener('dragover', handleDragOver);
-                tbody.addEventListener('dragleave', handleDragLeave);
-                tbody.addEventListener('drop', handleDrop);
-                tbody.addEventListener('dragenter', (e) => e.preventDefault());
+                // Attach new listeners
+                tbody._dragEventHandler = (e) => { // Store handler for removal
+                    if (e.type === 'dragover') handleDragOver(e);
+                    else if (e.type === 'dragleave') handleDragLeave(e);
+                    else if (e.type === 'drop') handleDrop(e);
+                    else if (e.type === 'dragenter') e.preventDefault();
+                };
+
+                ['dragover', 'dragleave', 'drop', 'dragenter'].forEach(event => {
+                    tbody.addEventListener(event, tbody._dragEventHandler);
+                });
             });
         }
 
@@ -995,12 +1076,12 @@
         function afiseazaCategoriiExistente() {
             const listElement = document.getElementById('existingCategoriesList');
             listElement.innerHTML = '';
-            const currentCategories = Object.keys(produse);
+            const currentCategories = Object.keys(produse).sort();
 
             currentCategories.forEach(cat => {
                 const li = document.createElement('li');
                 li.className = 'category-item';
-                
+
                 const span = document.createElement('span');
                 span.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
                 li.appendChild(span);
@@ -1033,16 +1114,7 @@
 
                 actionsDiv.appendChild(renameInput);
                 actionsDiv.appendChild(renameBtn);
-                
-                // Prevenim ștergerea categoriilor implicite dacă nu sunt goale.
-                // Categoria 'diverse' poate fi ștersă dacă e goală, dar e implicită pt. mutare.
-                const isDefaultCategory = ['carne', 'legume', 'bauturi', 'condimente'].includes(cat);
-                const isDiverseCategory = cat === 'diverse';
-
-                if (!(isDefaultCategory && produse[cat].length > 0) && !(isDiverseCategory && produse[cat].length > 0)) {
-                     actionsDiv.appendChild(deleteBtn);
-                }
-
+                actionsDiv.appendChild(deleteBtn); // Show delete button for all categories
 
                 li.appendChild(actionsDiv);
                 listElement.appendChild(li);
@@ -1051,45 +1123,44 @@
 
         function adaugaCategorieNoua() {
             const newCategoryNameInput = document.getElementById('newCategoryName');
-            let newCategoryName = newCategoryNameInput.value.trim().toLowerCase();
+            let newCategoryName = newCategoryNameInput.value.trim();
 
             if (!newCategoryName) {
                 alert('Numele categoriei nu poate fi gol!');
                 return;
             }
-            if (newCategoryName.includes(' ')) {
-                newCategoryName = newCategoryName.replace(/\s+/g, '-');
-                alert(`Numele categoriei a fost ajustat la "${newCategoryName}" (fără spații).`);
-            }
+            // Normalizează numele categoriei (fără spații, lowercase)
+            newCategoryName = newCategoryName.toLowerCase().replace(/\s+/g, '-');
+
             if (produse[newCategoryName]) {
-                alert('Această categorie există deja!');
+                alert('O categorie cu acest nume există deja!');
                 return;
             }
 
             produse[newCategoryName] = [];
             newCategoryNameInput.value = '';
             saveCurrentPlanToLocalStorage();
+            saveStateForHistory(); // Salvează starea după adăugarea categoriei
             actualizeazaToate();
             afiseazaCategoriiExistente();
         }
 
         function redenumesteCategorie(oldName, newName) {
-            newName = newName.trim().toLowerCase();
+            newName = newName.trim();
             if (!newName) {
                 alert('Numele categoriei nu poate fi gol!');
-                afiseazaCategoriiExistente();
+                afiseazaCategoriiExistente(); // Refresh the list
                 return;
             }
-            if (newName.includes(' ')) {
-                newName = newName.replace(/\s+/g, '-');
-            }
+            newName = newName.toLowerCase().replace(/\s+/g, '-');
+
             if (oldName === newName) {
-                afiseazaCategoriiExistente();
+                afiseazaCategoriiExistente(); // Refresh the list
                 return;
             }
             if (produse[newName]) {
                 alert('O categorie cu acest nume există deja!');
-                afiseazaCategoriiExistente();
+                afiseazaCategoriiExistente(); // Refresh the list
                 return;
             }
 
@@ -1097,41 +1168,68 @@
             delete produse[oldName];
 
             saveCurrentPlanToLocalStorage();
+            saveStateForHistory(); // Salvează starea după redenumire
             actualizeazaToate();
             afiseazaCategoriiExistente();
         }
 
         function stergeCategorie(categoryToDelete) {
-            if (!confirm(`Sigur vrei să ștergi categoria "${categoryToDelete}"? Produsele din această categorie vor fi mutate în "diverse".`)) {
-                return;
-            }
+            const defaultCategoriesSet = new Set(DEFAULT_CATEGORIES);
 
-            const defaultCategory = 'diverse';
-            if (!produse[defaultCategory]) {
-                produse[defaultCategory] = [];
-            }
-
-            if (produse[categoryToDelete]) {
-                produse[defaultCategory].push(...produse[categoryToDelete]);
-                delete produse[categoryToDelete];
+            if (produse[categoryToDelete] && produse[categoryToDelete].length > 0) {
+                // Category has products
+                if (defaultCategoriesSet.has(categoryToDelete)) {
+                    // It's a default category with products
+                    if (confirm(`Categoria "${categoryToDelete}" conține produse. Vrei să le muți în categoria "diverse" și apoi să ștergi "${categoryToDelete}"?`)) {
+                        const defaultDiverseCategory = 'diverse';
+                        if (!produse[defaultDiverseCategory]) {
+                            produse[defaultDiverseCategory] = [];
+                        }
+                        produse[defaultDiverseCategory].push(...produse[categoryToDelete]);
+                        delete produse[categoryToDelete];
+                    } else {
+                        return; // User canceled
+                    }
+                } else {
+                    // It's a custom category with products
+                    if (confirm(`Categoria "${categoryToDelete}" conține produse. Vrei să le muți în categoria "diverse" și apoi să ștergi "${categoryToDelete}"?`)) {
+                        const defaultDiverseCategory = 'diverse';
+                        if (!produse[defaultDiverseCategory]) {
+                            produse[defaultDiverseCategory] = [];
+                        }
+                        produse[defaultDiverseCategory].push(...produse[categoryToDelete]);
+                        delete produse[categoryToDelete];
+                    } else {
+                        return; // User canceled
+                    }
+                }
+            } else {
+                // Category is empty or doesn't exist (though the button implies it exists)
+                if (confirm(`Ești sigur că vrei să ștergi categoria "${categoryToDelete}"?`)) {
+                    delete produse[categoryToDelete];
+                } else {
+                    return; // User canceled
+                }
             }
 
             saveCurrentPlanToLocalStorage();
+            saveStateForHistory(); // Salvează starea după ștergerea categoriei
             actualizeazaToate();
             afiseazaCategoriiExistente();
         }
 
-        // --- Funcții Modificate pentru a Suporta Categorii Dinamice ---
+
+        // --- Funcții Modificate pentru a Suporta Categorii Dinamice și Sortare ---
         function actualizeazaToate() {
             const tablesGridContainer = document.getElementById('tablesGridContainer');
             tablesGridContainer.innerHTML = '';
 
-            const currentCategories = Object.keys(produse).sort(); // Sortează alfabetic categoriile pentru consistență
+            const currentCategories = Object.keys(produse).sort();
 
             currentCategories.forEach(category => {
                 const section = document.createElement('div');
                 section.className = 'table-section';
-                
+
                 const categoryDisplayName = category.charAt(0).toUpperCase() + category.slice(1);
 
                 section.innerHTML = `
@@ -1139,10 +1237,10 @@
                     <table id="${category}Table">
                         <thead>
                             <tr>
-                                <th onclick="sorteazaTabel('${category}', 'nume')">Produs</th>
-                                <th onclick="sorteazaTabel('${category}', 'cantitate')">Cantitate</th>
-                                <th onclick="sorteazaTabel('${category}', 'unitate')">Unitate</th>
-                                <th onclick="sorteazaTabel('${category}', 'pret')">Preț/Unitate (RON)</th>
+                                <th onclick="sorteazaTabel('${category}', 'nume')">Produs <span class="sort-indicator" id="${category}numeIndicator"></span></th>
+                                <th onclick="sorteazaTabel('${category}', 'cantitate')">Cantitate <span class="sort-indicator" id="${category}cantitateIndicator"></span></th>
+                                <th onclick="sorteazaTabel('${category}', 'unitate')">Unitate <span class="sort-indicator" id="${category}unitateIndicator"></span></th>
+                                <th onclick="sorteazaTabel('${category}', 'pret')">Preț/Unitate (RON) <span class="sort-indicator" id="${category}pretIndicator"></span></th>
                                 <th>Am Acasă</th>
                                 <th>Notițe</th>
                                 <th>Total (RON)</th>
@@ -1156,7 +1254,7 @@
                 actualizeazaTabela(`${category}Table`, produse[category], category);
             });
             actualizeazaBuget();
-            attachDragDropListeners(); // Re-atașează evenimentele de drag-and-drop
+            attachDragDropListeners();
         }
 
         function actualizeazaTabela(tabelId, produse_categorie, categoria) {
@@ -1168,12 +1266,12 @@
             tbody.innerHTML = '';
 
             produse_categorie.forEach((produs, index) => {
-                const totalProdusCalculat = (produs.cantitate * produs.pret).toFixed(2); // Calculeaza totalul cu 2 zecimale
+                const totalProdusCalculat = (produs.cantitate * produs.pret).toFixed(2);
 
                 const row = tbody.insertRow();
                 row.setAttribute('draggable', true);
                 row.dataset.category = categoria;
-                row.dataset.index = index; // Adaugă indexul produsului în rând
+                row.dataset.index = index;
 
                 row.innerHTML = `
                     <td><input type="text" class="editable-input" value="${produs.nume}" onchange="actualizeazaProprietate('${categoria}', ${index}, 'nume', this.value)"></td>
@@ -1186,10 +1284,7 @@
                     <td class="action-cell"><button class="delete-btn" onclick="stergeProdus('${categoria}', ${index})">Șterge</button></td>
                 `;
             });
-        }
-
-        function calculeazaTotalProdus(cantitate, pret) {
-            return (cantitate * pret); // Returnează valoarea numerică, formatarea se face la afișare
+            updateSortIndicators(categoria);
         }
 
         function actualizeazaProprietate(categoria, index, proprietate, valoareNoua) {
@@ -1199,7 +1294,7 @@
             }
             produse[categoria][index][proprietate] = valoareNoua;
             actualizeazaToate();
-            saveCurrentPlanToLocalStorage(); // Salvează la fiecare modificare de proprietate
+            saveStateForHistory(); // Salvează starea după modificare
         }
 
         function adaugaProdus(categoria) {
@@ -1211,19 +1306,19 @@
                 am_acasa: false,
                 notite: ""
             };
-            if (!produse[categoria]) { // Asigură-te că categoria există
+            if (!produse[categoria]) {
                 produse[categoria] = [];
             }
             produse[categoria].push(produs);
             actualizeazaToate();
-            saveCurrentPlanToLocalStorage();
+            saveStateForHistory(); // Salvează starea după adăugare
         }
 
         function stergeProdus(categoria, index) {
             if (confirm('Sigur vrei să ștergi acest produs?')) {
                 produse[categoria].splice(index, 1);
                 actualizeazaToate();
-                saveCurrentPlanToLocalStorage();
+                saveStateForHistory(); // Salvează starea după ștergere
             }
         }
 
@@ -1254,44 +1349,50 @@
             } else {
                 budgetSummary.classList.remove('warning');
             }
+            saveCurrentPlanToLocalStorage(); // Salvează la actualizarea bugetului
+            // Nu se adaugă în historyStack aici, pentru a evita spam-ul la fiecare tastare.
+            // Se adaugă la încărcare/resetare.
         }
 
         function sorteazaTabel(categoria, cheie) {
+            if (!sortDirections[categoria]) {
+                sortDirections[categoria] = {};
+            }
+            // Toggle sort direction
+            sortDirections[categoria][cheie] = sortDirections[categoria][cheie] === 'asc' ? 'desc' : 'asc';
+
             produse[categoria].sort((a, b) => {
-                if (typeof a[cheie] === 'string') {
-                    return a[cheie].localeCompare(b[cheie]);
+                let valA = a[cheie];
+                let valB = b[cheie];
+
+                // Handle numbers and strings appropriately
+                if (typeof valA === 'string' && !isNaN(parseFloat(valA)) && isFinite(valA)) {
+                    valA = parseFloat(valA);
+                    valB = parseFloat(valB);
                 }
-                return a[cheie] - b[cheie];
+
+                if (sortDirections[categoria][cheie] === 'asc') {
+                    return valA > valB ? 1 : -1;
+                } else {
+                    return valA < valB ? 1 : -1;
+                }
             });
             actualizeazaTabela(categoria + 'Table', produse[categoria], categoria);
-            saveCurrentPlanToLocalStorage(); // Salvează după sortare
+            saveStateForHistory(); // Salvează starea după sortare
         }
 
-        // Funcția pentru salvarea planului ca imagine
-        function salveazaPlanCaImagine() {
-            const element = document.getElementById('gratarPlanContainer');
+        function updateSortIndicators(category) {
+            const headers = document.querySelectorAll(`#${category}Table th`);
+            headers.forEach(header => {
+                const columnName = header.textContent.split(' ')[0].toLowerCase(); // Simplified way to get column name
+                const indicator = header.querySelector('.sort-indicator');
+                if (indicator) {
+                    indicator.textContent = ''; // Clear existing indicator
 
-            const options = {
-                scale: 2,
-                useCORS: true,
-                logging: false,
-                backgroundColor: '#f8f9fa'
-            };
-
-            html2canvas(element, options).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const a = document.createElement('a');
-                const date = new Date();
-                const filename = `plan_gratar_${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}_${date.getHours().toString().padStart(2, '0')}${date.getMinutes().toString().padStart(2, '0')}.png`;
-                a.href = imgData;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                alert('Planul a fost salvat ca imagine!');
-            }).catch(error => {
-                console.error('Eroare la salvarea imaginii:', error);
-                alert('A apărut o eroare la salvarea planului ca imagine. Te rog să încerci din nou.');
+                    if (sortDirections[category] && sortDirections[category][columnName]) {
+                        indicator.textContent = sortDirections[category][columnName] === 'asc' ? '▲' : '▼';
+                    }
+                }
             });
         }
 
@@ -1349,9 +1450,10 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+            alert('Lista de cumpărături a fost generată și descărcată!');
         }
 
-        // Functii pentru Istoric Planuri si CSV
+        // Functii pentru Istoric Planuri
         function deschideModalSalvarePlan() {
             document.getElementById('savePlanModal').style.display = 'flex';
             document.getElementById('planNameInput').value = '';
@@ -1385,6 +1487,7 @@
             localStorage.setItem(LOCAL_STORAGE_KEY_HISTORY, JSON.stringify(savedPlans));
             inchideModalSalvarePlan();
             afiseazaPlanuriSalvate();
+            saveStateForHistory(); // Salvează starea după salvarea planului în istoric
             alert(`Planul "${planName}" a fost salvat!`);
         }
 
@@ -1409,7 +1512,6 @@
                     <span>${plan.name} <br> <small>${plan.date}</small></span>
                     <div class="history-actions">
                         <button class="load-btn" onclick="incarcaPlan('${plan.timestamp}')">Încarcă</button>
-                        <button class="download-csv-btn" onclick="exportaPlanCSV('${plan.timestamp}')">Descărcare CSV</button>
                         <button class="delete-btn" onclick="stergePlan('${plan.timestamp}')">Șterge</button>
                     </div>
                 `;
@@ -1422,11 +1524,20 @@
             const planToLoad = savedPlans.find(p => p.timestamp === timestamp);
 
             if (planToLoad && confirm(`Sigur vrei să încarci planul "${planToLoad.name}"? Modificările curente nesalvate se vor pierde.`)) {
-                document.getElementById('persoane').value = planToLoad.persoane;
-                document.getElementById('buget').value = planToLoad.buget;
+                // Set the global variables first
+                currentPersons = planToLoad.persoane;
+                currentBudget = planToLoad.buget;
+
+                // Update input fields
+                document.getElementById('persoane').value = currentPersons;
+                document.getElementById('buget').value = currentBudget;
+
+                // Apply the products state
                 produse = JSON.parse(JSON.stringify(planToLoad.produse));
+
+                // Then re-render and save the new current state
                 actualizeazaToate();
-                saveCurrentPlanToLocalStorage(); // Salvează planul încărcat ca plan curent
+                saveStateForHistory(); // Salvează starea încărcată în istoric
                 alert(`Planul "${planToLoad.name}" a fost încărcat!`);
             }
         }
@@ -1441,109 +1552,16 @@
             }
         }
 
-        // Funcția care generează conținutul CSV
-        function generateCSVContent(planData) {
-            let csvContent = "";
-
-            // Antetul CSV
-            const headers = ["Categorie", "Produs", "Cantitate", "Unitate", "Pret/Unitate (RON)", "Am Acasa", "Notite", "Total (RON)"];
-            csvContent += headers.join(",") + "\n"; // Folosim virgula ca separator
-
-            // Adaugă datele pentru fiecare categorie
-            for (const category in planData.produse) {
-                planData.produse[category].forEach(produs => {
-                    const totalProdus = (produs.cantitate * produs.pret).toFixed(2);
-                    const row = [
-                        category,
-                        `"${produs.nume.replace(/"/g, '""')}"`,
-                        produs.cantitate,
-                        produs.unitate,
-                        produs.pret,
-                        produs.am_acasa ? "Da" : "Nu",
-                        `"${produs.notite.replace(/"/g, '""')}"`,
-                        totalProdus
-                    ];
-                    csvContent += row.join(",") + "\n";
-                });
-            }
-
-            // Adaugă sumarul bugetului la final
-            csvContent += "\n\n";
-            csvContent += "Sumar Buget\n";
-            csvContent += `Data:,${planData.date || 'N/A'}\n`;
-            csvContent += `Nume plan:,${planData.name || 'Plan Curent'}\n`;
-            csvContent += `Numar persoane:,${planData.persoane}\n`;
-            csvContent += `Buget total:,${planData.buget.toFixed(2)} RON\n`;
-            const totalCheltuieli = Object.values(planData.produse).flat().reduce((sum, p) => sum + (p.am_acasa ? 0 : p.cantitate * p.pret), 0);
-            csvContent += `Total cheltuieli (est. necesar):,${totalCheltuieli.toFixed(2)} RON\n`;
-            csvContent += `Bani ramasi:,${(planData.buget - totalCheltuieli).toFixed(2)} RON\n`;
-
-            return csvContent;
-        }
-
-        // Funcția pentru exportul planului curent în CSV
-        function exportaPlanCurentCSV() {
-            const currentPlanState = {
-                name: "Plan Curent",
-                date: new Date().toLocaleString('ro-RO'),
-                persoane: parseInt(document.getElementById('persoane').value) || 0,
-                buget: parseFloat(document.getElementById('buget').value) || 0,
-                produse: JSON.parse(JSON.stringify(produse))
-            };
-            const csv = generateCSVContent(currentPlanState);
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            const date = new Date();
-            const filename = `plan_gratar_curent_${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}.csv`;
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            alert('Planul curent a fost exportat în CSV!');
-        }
-
-        // Funcția pentru exportul unui plan din istoric în CSV
-        function exportaPlanCSV(timestamp) {
-            const savedPlans = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_HISTORY) || '[]');
-            const planToExport = savedPlans.find(p => p.timestamp === timestamp);
-
-            if (planToExport) {
-                const csv = generateCSVContent(planToExport);
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                const filename = `plan_gratar_${planToExport.name.replace(/[^a-z0-9]/gi, '_')}_${new Date(planToExport.timestamp).toLocaleDateString('ro-RO').replace(/\./g, '-')}.csv`;
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                alert(`Planul "${planToExport.name}" a fost exportat în CSV!`);
-            } else {
-                alert('Eroare: Planul nu a fost găsit în istoric.');
-            }
-        }
-
-
         // Inițializare la încărcarea paginii
         document.addEventListener('DOMContentLoaded', () => {
             loadCurrentPlanFromLocalStorage(); // Încărcăm starea curentă (inclusiv produse și categorii)
+            saveStateForHistory(); // Salvează starea inițială în istoric
             actualizeazaToate(); // Afișează toate tabelele cu datele încărcate
             afiseazaPlanuriSalvate(); // Afișează istoricul planurilor
 
             // Atach events for budget and persons inputs
-            document.getElementById('persoane').addEventListener('input', () => {
-                actualizeazaBuget();
-                saveCurrentPlanToLocalStorage();
-            });
-            document.getElementById('buget').addEventListener('input', () => {
-                actualizeazaBuget();
-                saveCurrentPlanToLocalStorage();
-            });
+            document.getElementById('persoane').addEventListener('input', actualizeazaBuget);
+            document.getElementById('buget').addEventListener('input', actualizeazaBuget);
         });
     </script>
 </body>
