@@ -8,25 +8,25 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); /* Gri închis la negru */
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             margin: 0;
             padding: 20px;
             min-height: 100vh;
-            color: #ecf0f1; /* Text deschis pentru fundal închis */
+            color: #ecf0f1;
         }
 
         .container {
-            max-width: 1400px; /* Lățime mai mare pentru mai mult spațiu */
+            max-width: 1400px;
             margin: 0 auto;
-            background: #f8f9fa; /* Fundal deschis pentru conținut */
+            background: #f8f9fa;
             border-radius: 15px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             overflow: hidden;
-            color: #333; /* Text închis pentru conținut deschis */
+            color: #333;
         }
 
         .header {
-            background: linear-gradient(135deg, #34495e, #2c3e50); /* Gradient gri închis */
+            background: linear-gradient(135deg, #34495e, #2c3e50);
             color: white;
             padding: 30px;
             text-align: center;
@@ -50,7 +50,7 @@
             display: flex;
             justify-content: center;
             gap: 15px;
-            flex-wrap: wrap; /* Permite butoanelor să se așeze pe rândul următor */
+            flex-wrap: wrap;
         }
 
         .action-buttons button {
@@ -80,7 +80,7 @@
             gap: 20px;
             margin-bottom: 30px;
             padding: 20px;
-            background: #eceff1; /* Gri foarte deschis */
+            background: #eceff1;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
@@ -108,19 +108,19 @@
 
         .input-group input:focus {
             outline: none;
-            border-color: #6a82fb; /* O nuanță de albastru/violet */
+            border-color: #6a82fb;
             box-shadow: 0 0 0 3px rgba(106, 130, 251, 0.2);
         }
 
         .tables-grid-container {
             display: grid;
-            grid-template-columns: 1fr; /* Doar o singură coloană */
-            gap: 30px; /* Spațiu între secțiunile de tabel */
+            grid-template-columns: 1fr;
+            gap: 30px;
             margin-bottom: 30px;
         }
 
         .table-section {
-            background: #eceff1; /* Gri foarte deschis */
+            background: #eceff1;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
@@ -136,11 +136,11 @@
             align-items: center;
             margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #cfd8dc; /* Linie sub titlu */
+            border-bottom: 1px solid #cfd8dc;
         }
 
         .add-btn {
-            background: #28a745; /* Verde */
+            background: #28a745;
             color: white;
             border: none;
             padding: 8px 12px;
@@ -156,7 +156,7 @@
         }
 
         .delete-btn {
-            background: #dc3545; /* Roșu */
+            background: #dc3545;
             color: white;
             border: none;
             padding: 4px 8px;
@@ -185,19 +185,35 @@
             text-align: left;
             border-bottom: 1px solid #eee;
             color: #333;
-            white-space: nowrap; /* Previne ruperea textului în coloane */
+            white-space: nowrap;
         }
 
         th {
-            background: #555; /* Gri închis pentru antet */
+            background: #555;
             color: white;
             font-weight: bold;
-            cursor: pointer; /* Pentru sortare */
+            cursor: pointer;
         }
 
         th:hover {
             background: #666;
         }
+
+        /* Stil pentru drag-and-drop */
+        td {
+            cursor: grab; /* Indica ca elementul este dragabil */
+        }
+        td:active {
+            cursor: grabbing;
+        }
+        tr.dragging {
+            opacity: 0.5;
+            background-color: #e0f2f7; /* Fundal temporar cand se trage */
+        }
+        .drag-over {
+            border-bottom: 2px solid #6a82fb; /* Indica unde va fi plasat elementul */
+        }
+
 
         tr:hover {
             background: #f5f5f5;
@@ -240,7 +256,7 @@
         }
 
         .budget-summary {
-            background: linear-gradient(135deg, #34495e, #2c3e50); /* Gradient gri închis */
+            background: linear-gradient(135deg, #34495e, #2c3e50);
             color: white;
             padding: 25px;
             border-radius: 10px;
@@ -273,7 +289,7 @@
         }
 
         .warning {
-            background: #c0392b !important; /* Roșu mai închis */
+            background: #c0392b !important;
             animation: pulse 2s infinite;
             box-shadow: 0 0 15px rgba(192, 57, 43, 0.5) !important;
         }
@@ -284,21 +300,21 @@
         }
 
         .action-cell {
-            width: 100px; /* Lățime ajustată */
+            width: 100px;
             text-align: center;
         }
 
         /* Stiluri pentru modal (pop-up) */
         .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
+            display: none;
+            position: fixed;
+            z-index: 1;
             left: 0;
             top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
             justify-content: center;
             align-items: center;
         }
@@ -310,7 +326,7 @@
             border: 1px solid #888;
             border-radius: 10px;
             width: 80%;
-            max-width: 500px;
+            max-width: 600px; /* Lățime mai mare pentru modalul de categorii */
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             text-align: center;
         }
@@ -381,15 +397,15 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            flex-wrap: wrap; /* Permite elementelor să se așeze pe rândul următor pe ecrane mici */
+            flex-wrap: wrap;
         }
 
         #savedPlansList li span {
             font-weight: bold;
             color: #333;
-            flex-grow: 1; /* Permite numelui să ocupe spațiu */
+            flex-grow: 1;
             margin-right: 10px;
-            white-space: normal; /* Permite textului să se încadreze */
+            white-space: normal;
         }
 
         #savedPlansList li .history-actions button {
@@ -407,7 +423,7 @@
         }
 
         #savedPlansList li .history-actions .download-csv-btn {
-            background: #ffc107; /* Galben */
+            background: #ffc107;
             color: #333;
         }
         #savedPlansList li .history-actions .download-csv-btn:hover {
@@ -419,6 +435,70 @@
         }
         #savedPlansList li .history-actions .delete-btn:hover {
             background: #c82333;
+        }
+
+        /* Stiluri pentru modalul de categorii */
+        #categoryManagerModal .modal-content {
+            text-align: left;
+        }
+        #categoryManagerModal h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        #categoryManagerModal #newCategoryName {
+            width: calc(100% - 130px);
+            margin-right: 10px;
+            display: inline-block;
+        }
+        #categoryManagerModal .add-category-btn {
+            background: #28a745;
+            padding: 10px 15px;
+        }
+        #categoryManagerModal .category-list {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 10px;
+            background: #f9f9f9;
+        }
+        #categoryManagerModal .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        #categoryManagerModal .category-item:last-child {
+            border-bottom: none;
+        }
+        #categoryManagerModal .category-item span {
+            font-weight: normal;
+            flex-grow: 1;
+        }
+        #categoryManagerModal .category-item input[type="text"] {
+            flex-grow: 1;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            padding: 5px;
+        }
+        #categoryManagerModal .category-actions button {
+            padding: 5px 10px;
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+        #categoryManagerModal .category-actions .rename-btn {
+            background: #ffc107;
+            color: #333;
+        }
+        #categoryManagerModal .category-actions .delete-category-btn {
+            background: #dc3545;
+        }
+        #categoryManagerModal .modal-buttons {
+            margin-top: 20px;
+            text-align: right;
         }
     </style>
 </head>
@@ -432,6 +512,7 @@
                 <button onclick="genereazaListaCumparaturiSiDescarca()">🛒 Generează Listă Cumpărături</button>
                 <button onclick="exportaPlanCurentCSV()">📊 Exportă Plan Curent (CSV)</button>
                 <button onclick="deschideModalSalvarePlan()">💾 Salvează Plan în Istoric</button>
+                <button onclick="deschideModalCategorii()">⚙️ Gestionează Categorii</button>
             </div>
         </div>
 
@@ -447,83 +528,8 @@
                 </div>
             </div>
 
-            <div class="tables-grid-container">
-                <div class="table-section">
-                    <h3>🥩 Carne și Preparate <button class="add-btn" onclick="adaugaProdus('carne')">+ Adaugă</button></h3>
-                    <table id="carneTable">
-                        <thead>
-                            <tr>
-                                <th onclick="sorteazaTabel('carne', 'nume')">Produs</th>
-                                <th onclick="sorteazaTabel('carne', 'cantitate')">Cantitate</th>
-                                <th onclick="sorteazaTabel('carne', 'unitate')">Unitate</th>
-                                <th onclick="sorteazaTabel('carne', 'pret')">Preț/Unitate (RON)</th>
-                                <th>Am Acasă</th>
-                                <th>Notițe</th>
-                                <th>Total (RON)</th>
-                                <th>Acțiuni</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+            <div class="tables-grid-container" id="tablesGridContainer">
                 </div>
-
-                <div class="table-section">
-                    <h3>🥗 Legume și Fructe <button class="add-btn" onclick="adaugaProdus('legume')">+ Adaugă</button></h3>
-                    <table id="legumeTable">
-                        <thead>
-                            <tr>
-                                <th onclick="sorteazaTabel('legume', 'nume')">Produs</th>
-                                <th onclick="sorteazaTabel('legume', 'cantitate')">Cantitate</th>
-                                <th onclick="sorteazaTabel('legume', 'unitate')">Unitate</th>
-                                <th onclick="sorteazaTabel('legume', 'pret')">Preț/Unitate (RON)</th>
-                                <th>Am Acasă</th>
-                                <th>Notițe</th>
-                                <th>Total (RON)</th>
-                                <th>Acțiuni</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-
-                <div class="table-section">
-                    <h3>🍺 Băuturi și Alcool <button class="add-btn" onclick="adaugaProdus('bauturi')">+ Adaugă</button></h3>
-                    <table id="bauturiTable">
-                        <thead>
-                            <tr>
-                                <th onclick="sorteazaTabel('bauturi', 'nume')">Produs</th>
-                                <th onclick="sorteazaTabel('bauturi', 'cantitate')">Cantitate</th>
-                                <th onclick="sorteazaTabel('bauturi', 'unitate')">Unitate</th>
-                                <th onclick="sorteazaTabel('bauturi', 'pret')">Preț/Unitate (RON)</th>
-                                <th>Am Acasă</th>
-                                <th>Notițe</th>
-                                <th>Total (RON)</th>
-                                <th>Acțiuni</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-
-                <div class="table-section">
-                    <h3>🍽️ Accesorii și Diverse <button class="add-btn" onclick="adaugaProdus('condimente')">+ Adaugă</button></h3>
-                    <table id="condimenteTable">
-                        <thead>
-                            <tr>
-                                <th onclick="sorteazaTabel('condimente', 'nume')">Produs</th>
-                                <th onclick="sorteazaTabel('condimente', 'cantitate')">Cantitate</th>
-                                <th onclick="sorteazaTabel('condimente', 'unitate')">Unitate</th>
-                                <th onclick="sorteazaTabel('condimente', 'pret')">Preț/Unitate (RON)</th>
-                                <th>Am Acasă</th>
-                                <th>Notițe</th>
-                                <th>Total (RON)</th>
-                                <th>Acțiuni</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
 
             <div class="budget-summary" id="budgetSummary">
                 <h3>📊 Sumar Buget</h3>
@@ -546,7 +552,7 @@
             <div class="history-section">
                 <h3>📚 Istoric Planuri Salvate</h3>
                 <ul id="savedPlansList">
-                    </ul>
+                </ul>
                 <p id="noPlansMessage" style="text-align: center; color: #666;">Nu există planuri salvate. Salvează unul acum!</p>
             </div>
         </div>
@@ -559,6 +565,23 @@
             <input type="text" id="planNameInput" placeholder="Numele planului (ex: Grătar Aniversar)">
             <button onclick="salveazaPlanInLocalStorage()">Salvează</button>
             <button class="close-button" onclick="inchideModalSalvarePlan()">Anulează</button>
+        </div>
+    </div>
+
+    <div id="categoryManagerModal" class="modal">
+        <div class="modal-content">
+            <h2>Gestionează Categorii</h2>
+            <div>
+                <input type="text" id="newCategoryName" placeholder="Nume categorie nouă">
+                <button class="add-category-btn" onclick="adaugaCategorieNoua()">Adaugă</button>
+            </div>
+            <div class="category-list">
+                <ul id="existingCategoriesList">
+                    </ul>
+            </div>
+            <div class="modal-buttons">
+                <button class="close-button" onclick="inchideModalCategorii()">Închide</button>
+            </div>
         </div>
     </div>
 
@@ -591,20 +614,316 @@
                 { nume: "Gheață", cantitate: 2, unitate: "kg", pret: 5, am_acasa: false, notite: "" },
                 { nume: "Carbuni", cantitate: 1, unitate: "sac", pret: 25, am_acasa: false, notite: "" },
                 { nume: "Farfurii", cantitate: 1, unitate: "set", pret: 15, am_acasa: false, notite: "Set de 50 buc" },
-                { nume: "Pahare", cantitate: 1, unitate: "set", pret: 12, am_acasa: false, notite: "Set de 50 buc" },
+                { nume: "Pahare", cantitate: 1, unitate: "set", pret: 12, am_acasa: false, notite: "" },
                 { nume: "Role bucătărie", cantitate: 1, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
                 { nume: "Saci gunoi mari", cantitate: 1, unitate: "buc", pret: 12, am_acasa: false, notite: "" }
             ]
         };
 
-        // Cantitatea este acum numărul de unități (ex: saci, bucăți, kg) direct
-        function calculeazaTotalProdus(cantitate, pret) {
-            return (cantitate * pret).toFixed(2);
+        const CATEGORIES_KEY = 'gratar_categorii';
+        const PRODUCTS_KEY = 'gratar_produse'; // Noua cheie pentru a salva obiectul produse
+
+        // --- Funcții Utilitare pentru Stocare Locală ---
+        function saveCategoriesToLocalStorage() {
+            localStorage.setItem(CATEGORIES_KEY, JSON.stringify(Object.keys(produse)));
+        }
+
+        function loadCategoriesFromLocalStorage() {
+            const savedCategories = JSON.parse(localStorage.getItem(CATEGORIES_KEY));
+            if (savedCategories) {
+                const newProduse = {};
+                savedCategories.forEach(cat => {
+                    newProduse[cat] = produse[cat] || []; // Păstrează produsele existente sau creează o listă goală
+                });
+                // Mută produsele din categoriile vechi care nu mai există în cele noi
+                for (const oldCat in produse) {
+                    if (!savedCategories.includes(oldCat)) {
+                        const defaultCategory = 'diverse';
+                        if (!newProduse[defaultCategory]) {
+                            newProduse[defaultCategory] = [];
+                        }
+                        newProduse[defaultCategory].push(...produse[oldCat]);
+                    }
+                }
+                produse = newProduse;
+            }
+            // Asigură-te că există întotdeauna cel puțin categoriile inițiale dacă nu sunt salvate altele
+            if (Object.keys(produse).length === 0) {
+                 produse = {
+                    carne: [], legume: [], bauturi: [], condimente: []
+                 };
+            }
+            saveProductsToLocalStorage(); // Salvează starea produselor după încărcarea categoriilor
+        }
+
+        function saveProductsToLocalStorage() {
+            localStorage.setItem(PRODUCTS_KEY, JSON.stringify(produse));
+        }
+
+        function loadProductsFromLocalStorage() {
+            const savedProducts = JSON.parse(localStorage.getItem(PRODUCTS_KEY));
+            if (savedProducts) {
+                produse = savedProducts;
+            }
+        }
+
+        // --- Funcții pentru Drag-and-Drop ---
+        let draggingRow = null;
+        let originalTableId = null;
+
+        function handleDragStart(event, category, index) {
+            draggingRow = event.target.closest('tr');
+            originalTableId = category + 'Table';
+            draggingRow.classList.add('dragging');
+            event.dataTransfer.setData('text/plain', JSON.stringify({ category, index }));
+            event.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+            const targetRow = event.target.closest('tr');
+            if (targetRow && draggingRow && targetRow !== draggingRow) {
+                // Adaugă o clasă pentru a indica vizual zona de drop
+                const tbody = targetRow.parentNode;
+                const rows = Array.from(tbody.children);
+                const draggingIndex = rows.indexOf(draggingRow);
+                const targetIndex = rows.indexOf(targetRow);
+
+                rows.forEach(row => row.classList.remove('drag-over')); // Curăță vechile indicatoare
+                if (targetIndex > draggingIndex) {
+                    targetRow.classList.add('drag-over'); // Sub rând
+                } else {
+                    targetRow.previousElementSibling?.classList.add('drag-over'); // Deasupra rândului
+                }
+            }
+        }
+
+        function handleDragLeave(event) {
+            const targetRow = event.target.closest('tr');
+            if (targetRow) {
+                targetRow.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(event, targetCategory, targetIndex) {
+            event.preventDefault();
+            const data = JSON.parse(event.dataTransfer.getData('text/plain'));
+            const sourceCategory = data.category;
+            const sourceIndex = data.index;
+
+            const targetRowElement = event.target.closest('tr');
+            if (targetRowElement) {
+                targetRowElement.classList.remove('drag-over');
+            }
+
+
+            if (sourceCategory === targetCategory) {
+                // Mutare în aceeași categorie
+                const [movedProduct] = produse[sourceCategory].splice(sourceIndex, 1);
+                produse[targetCategory].splice(targetIndex, 0, movedProduct);
+            } else {
+                // Mutare între categorii (nu este cerută explicit, dar o gestionăm ca posibilitate)
+                const [movedProduct] = produse[sourceCategory].splice(sourceIndex, 1);
+                produse[targetCategory].splice(targetIndex, 0, movedProduct);
+                // Nu uita să cureți eventualele categorii goale dacă produsele au fost mutate
+                if (produse[sourceCategory].length === 0 && sourceCategory !== 'diverse') {
+                    // Poți alege să nu ștergi categoria goală, sau să o ștergi din produse și din lista de categorii salvate
+                    // În acest exemplu, o lasăm și se va reconstrui la refresh dacă e goală, sau poți decide să o ștergi.
+                }
+            }
+
+            draggingRow.classList.remove('dragging');
+            draggingRow = null;
+            originalTableId = null;
+
+            actualizeazaToate(); // Reface toate tabelele pentru a reflecta noua ordine
+            saveProductsToLocalStorage(); // Salvează noua ordine
+        }
+
+        // --- Funcții pentru CRUD Categorii ---
+        function deschideModalCategorii() {
+            document.getElementById('categoryManagerModal').style.display = 'flex';
+            afiseazaCategoriiExistente();
+        }
+
+        function inchideModalCategorii() {
+            document.getElementById('categoryManagerModal').style.display = 'none';
+        }
+
+        function afiseazaCategoriiExistente() {
+            const listElement = document.getElementById('existingCategoriesList');
+            listElement.innerHTML = '';
+            const currentCategories = Object.keys(produse);
+
+            currentCategories.forEach(cat => {
+                const li = document.createElement('li');
+                li.className = 'category-item';
+                
+                const span = document.createElement('span');
+                span.textContent = cat.charAt(0).toUpperCase() + cat.slice(1); // capitalizează prima literă
+                li.appendChild(span);
+
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'category-actions';
+
+                const renameInput = document.createElement('input');
+                renameInput.type = 'text';
+                renameInput.value = cat;
+                renameInput.style.display = 'none'; // Hidden by default
+
+                const renameBtn = document.createElement('button');
+                renameBtn.textContent = 'Redenumește';
+                renameBtn.className = 'rename-btn';
+                renameBtn.onclick = () => {
+                    if (renameInput.style.display === 'none') {
+                        span.style.display = 'none';
+                        renameInput.style.display = 'inline-block';
+                        renameInput.focus();
+                    } else {
+                        redenumesteCategorie(cat, renameInput.value);
+                    }
+                };
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Șterge';
+                deleteBtn.className = 'delete-category-btn';
+                deleteBtn.onclick = () => stergeCategorie(cat);
+
+                actionsDiv.appendChild(renameInput);
+                actionsDiv.appendChild(renameBtn);
+                // Nu permitem ștergerea categoriilor goale implicite pentru a evita probleme la prima încărcare
+                if (!['carne', 'legume', 'bauturi', 'condimente'].includes(cat) || produse[cat].length === 0) {
+                     actionsDiv.appendChild(deleteBtn);
+                }
+
+
+                li.appendChild(actionsDiv);
+                listElement.appendChild(li);
+            });
+        }
+
+        function adaugaCategorieNoua() {
+            const newCategoryNameInput = document.getElementById('newCategoryName');
+            let newCategoryName = newCategoryNameInput.value.trim().toLowerCase();
+
+            if (!newCategoryName) {
+                alert('Numele categoriei nu poate fi gol!');
+                return;
+            }
+            if (newCategoryName.includes(' ')) {
+                newCategoryName = newCategoryName.replace(/\s+/g, '-'); // înlocuiește spațiile cu cratime
+                alert(`Numele categoriei a fost ajustat la "${newCategoryName}" (fără spații).`);
+            }
+            if (produse[newCategoryName]) {
+                alert('Această categorie există deja!');
+                return;
+            }
+
+            produse[newCategoryName] = [];
+            newCategoryNameInput.value = '';
+            saveCategoriesToLocalStorage();
+            saveProductsToLocalStorage(); // Update products structure
+            actualizeazaToate();
+            afiseazaCategoriiExistente(); // Refresh modal list
+        }
+
+        function redenumesteCategorie(oldName, newName) {
+            newName = newName.trim().toLowerCase();
+            if (!newName) {
+                alert('Numele categoriei nu poate fi gol!');
+                afiseazaCategoriiExistente(); // Refresh pentru a anula inputul gol
+                return;
+            }
+            if (newName.includes(' ')) {
+                newName = newName.replace(/\s+/g, '-');
+            }
+            if (oldName === newName) { // Nu s-a schimbat nimic
+                afiseazaCategoriiExistente();
+                return;
+            }
+            if (produse[newName]) {
+                alert('O categorie cu acest nume există deja!');
+                afiseazaCategoriiExistente(); // Refresh pentru a anula inputul invalid
+                return;
+            }
+
+            produse[newName] = produse[oldName];
+            delete produse[oldName];
+
+            saveCategoriesToLocalStorage();
+            saveProductsToLocalStorage();
+            actualizeazaToate();
+            afiseazaCategoriiExistente();
+        }
+
+        function stergeCategorie(categoryToDelete) {
+            if (!confirm(`Sigur vrei să ștergi categoria "${categoryToDelete}"? Produsele din această categorie vor fi mutate în "diverse".`)) {
+                return;
+            }
+
+            // Creează categoria "diverse" dacă nu există
+            const defaultCategory = 'diverse';
+            if (!produse[defaultCategory]) {
+                produse[defaultCategory] = [];
+            }
+
+            // Mută produsele din categoria ștearsă în "diverse"
+            if (produse[categoryToDelete]) {
+                produse[defaultCategory].push(...produse[categoryToDelete]);
+                delete produse[categoryToDelete];
+            }
+
+            saveCategoriesToLocalStorage();
+            saveProductsToLocalStorage();
+            actualizeazaToate();
+            afiseazaCategoriiExistente();
+        }
+
+        // --- Funcții Modificate pentru a Suporta Categorii Dinamice ---
+        function actualizeazaToate() {
+            const tablesGridContainer = document.getElementById('tablesGridContainer');
+            tablesGridContainer.innerHTML = ''; // Golește containerul de tabele
+
+            const currentCategories = Object.keys(produse);
+
+            currentCategories.forEach(category => {
+                const section = document.createElement('div');
+                section.className = 'table-section';
+                
+                const categoryDisplayName = category.charAt(0).toUpperCase() + category.slice(1); // Prima litera mare
+
+                section.innerHTML = `
+                    <h3>${categoryDisplayName} <button class="add-btn" onclick="adaugaProdus('${category}')">+ Adaugă</button></h3>
+                    <table id="${category}Table">
+                        <thead>
+                            <tr>
+                                <th onclick="sorteazaTabel('${category}', 'nume')">Produs</th>
+                                <th onclick="sorteazaTabel('${category}', 'cantitate')">Cantitate</th>
+                                <th onclick="sorteazaTabel('${category}', 'unitate')">Unitate</th>
+                                <th onclick="sorteazaTabel('${category}', 'pret')">Preț/Unitate (RON)</th>
+                                <th>Am Acasă</th>
+                                <th>Notițe</th>
+                                <th>Total (RON)</th>
+                                <th>Acțiuni</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                `;
+                tablesGridContainer.appendChild(section);
+                actualizeazaTabela(`${category}Table`, produse[category], category);
+            });
+            actualizeazaBuget();
+            // Re-atașează evenimentele de drag-and-drop după ce tabelele sunt regenerate
+            attachDragDropListeners();
         }
 
         function actualizeazaTabela(tabelId, produse_categorie, categoria) {
             const tabel = document.getElementById(tabelId);
+            if (!tabel) return; // Asigură-te că tabelul există
             const tbody = tabel.querySelector('tbody');
+            if (!tbody) return; // Asigură-te că tbody există
 
             tbody.innerHTML = '';
 
@@ -612,6 +931,15 @@
                 const totalProdusCalculat = calculeazaTotalProdus(produs.cantitate, produs.pret);
 
                 const row = tbody.insertRow();
+                row.setAttribute('draggable', true); // Face rândul dragabil
+                row.dataset.category = categoria;
+                row.dataset.index = index;
+                row.addEventListener('dragstart', (e) => handleDragStart(e, categoria, index));
+                row.addEventListener('dragover', handleDragOver);
+                row.addEventListener('dragleave', handleDragLeave);
+                row.addEventListener('drop', (e) => handleDrop(e, categoria, index)); // Drop pe rând
+                row.addEventListener('dragenter', (e) => e.preventDefault()); // Necesar pentru drop
+
                 row.innerHTML = `
                     <td><input type="text" class="editable-input" value="${produs.nume}" onchange="actualizeazaProprietate('${categoria}', ${index}, 'nume', this.value)"></td>
                     <td><input type="number" class="quantity-input" value="${produs.cantitate}" step="0.01" onchange="actualizeazaProprietate('${categoria}', ${index}, 'cantitate', parseFloat(this.value) || 0)"></td>
@@ -625,348 +953,119 @@
             });
         }
 
-        function actualizeazaProprietate(categoria, index, proprietate, valoareNoua) {
-            produse[categoria][index][proprietate] = valoareNoua;
-            actualizeazaToate();
-        }
+        // Re-atașează evenimentele de drag-drop la nivel de tbody pentru a prinde drop-uri când tabelul este gol sau la final
+        function attachDragDropListeners() {
+            const allTbodies = document.querySelectorAll('.table-section tbody');
+            allTbodies.forEach(tbody => {
+                const category = tbody.closest('.table-section').querySelector('h3').textContent.split(' ')[0].toLowerCase(); // Extrage categoria din titlu
 
-        function adaugaProdus(categoria) {
-            const produs = {
-                nume: "Produs nou",
-                cantitate: 1, // Cantitatea inițială este 1 unitate
-                unitate: "buc",
-                pret: 1,
-                am_acasa: false,
-                notite: ""
-            };
-            produse[categoria].push(produs);
-            actualizeazaToate();
-        }
-
-        function stergeProdus(categoria, index) {
-            if (confirm('Sigur vrei să ștergi acest produs?')) {
-                produse[categoria].splice(index, 1);
-                actualizeazaToate();
-            }
-        }
-
-        function calculeazaTotalCheltuieli() {
-            let total = 0;
-
-            Object.values(produse).forEach(categorie => {
-                categorie.forEach(produs => {
-                    if (!produs.am_acasa) { // Include doar produsele care nu sunt "acasă"
-                        total += produs.cantitate * produs.pret;
+                tbody.addEventListener('dragover', (event) => {
+                    event.preventDefault();
+                    event.dataTransfer.dropEffect = 'move';
+                    // Adaugă clasa drag-over pe tbody dacă este gol
+                    if (tbody.children.length === 0) {
+                        tbody.classList.add('drag-over');
+                    } else {
+                        // Dacă nu e gol, handleDragOver pe rânduri deja se ocupă de asta
+                        tbody.classList.remove('drag-over');
                     }
                 });
-            });
-            return total;
-        }
 
-        function actualizeazaBuget() {
-            const bugetTotal = parseFloat(document.getElementById('buget').value) || 0;
-            const totalCheltuieli = calculeazaTotalCheltuieli();
-            const baniRamasi = bugetTotal - totalCheltuieli;
+                tbody.addEventListener('dragleave', (event) => {
+                    tbody.classList.remove('drag-over');
+                });
 
-            document.getElementById('totalBuget').textContent = `${bugetTotal.toFixed(2)} RON`;
-            document.getElementById('totalCheltuieli').textContent = `${totalCheltuieli.toFixed(2)} RON`;
-            document.getElementById('baniRamasi').textContent = `${baniRamasi.toFixed(2)} RON`;
+                tbody.addEventListener('drop', (event) => {
+                    event.preventDefault();
+                    tbody.classList.remove('drag-over'); // Curăță clasa vizuală
 
-            const budgetSummary = document.getElementById('budgetSummary');
-            if (baniRamasi < 0) {
-                budgetSummary.classList.add('warning');
-            } else {
-                budgetSummary.classList.remove('warning');
-            }
-        }
+                    const data = JSON.parse(event.dataTransfer.getData('text/plain'));
+                    const sourceCategory = data.category;
+                    const sourceIndex = data.index;
 
-        function actualizeazaToate() {
-            actualizeazaTabela('carneTable', produse.carne, 'carne');
-            actualizeazaTabela('legumeTable', produse.legume, 'legume');
-            actualizeazaTabela('bauturiTable', produse.bauturi, 'bauturi');
-            actualizeazaTabela('condimenteTable', produse.condimente, 'condimente');
-            actualizeazaBuget();
-            // Nu mai actualizăm istoricul aici, ci doar la salvare/ștergere
-        }
-
-        function sorteazaTabel(categoria, cheie) {
-            produse[categoria].sort((a, b) => {
-                if (typeof a[cheie] === 'string') {
-                    return a[cheie].localeCompare(b[cheie]);
-                }
-                return a[cheie] - b[cheie];
-            });
-            actualizeazaTabela(categoria + 'Table', produse[categoria], categoria);
-        }
-
-        // Funcția pentru salvarea planului ca imagine
-        function salveazaPlanCaImagine() {
-            const element = document.getElementById('gratarPlanContainer');
-
-            const options = {
-                scale: 2, // Mărește rezoluția pentru o calitate mai bună a imaginii
-                useCORS: true,
-                logging: false,
-                backgroundColor: '#f8f9fa'
-            };
-
-            html2canvas(element, options).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const a = document.createElement('a');
-                const date = new Date();
-                const filename = `plan_gratar_${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}_${date.getHours().toString().padStart(2, '0')}${date.getMinutes().toString().padStart(2, '0')}.png`;
-                a.href = imgData;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                alert('Planul a fost salvat ca imagine!');
-            }).catch(error => {
-                console.error('Eroare la salvarea imaginii:', error);
-                alert('A apărut o eroare la salvarea planului ca imagine. Te rog să încerci din nou.');
-            });
-        }
-
-        // Funcția pentru generarea și descărcarea listei de cumpărături (TXT)
-        function genereazaListaCumparaturiSiDescarca() {
-            const nr_persoane = parseInt(document.getElementById('persoane').value) || 0;
-
-            const lista = {};
-            let totalLista = 0;
-            let outputText = "--- Lista de Cumpărături Grătar ---\n\n";
-            outputText += `Număr persoane estimate: ${nr_persoane}\n\n`;
-
-            Object.values(produse).forEach(categorie => {
-                categorie.forEach(produs => {
-                    if (!produs.am_acasa) {
-                        const cantitateNecesara = produs.cantitate;
-                        const pretTotalProdus = cantitateNecesara * produs.pret;
-
-                        if (lista[produs.nume]) {
-                            lista[produs.nume].cantitate += cantitateNecesara;
-                            lista[produs.nume].pretTotal += pretTotalProdus;
-                        } else {
-                            lista[produs.nume] = {
-                                cantitate: cantitateNecesara,
-                                unitate: produs.unitate,
-                                pretTotal: pretTotalProdus,
-                                notite: produs.notite
-                            };
+                    // Daca drop-ul se face pe un tbody gol, adauga la finalul categoriei
+                    if (tbody.children.length === 0) {
+                        if (sourceCategory !== category) {
+                            const [movedProduct] = produse[sourceCategory].splice(sourceIndex, 1);
+                            produse[category].push(movedProduct); // Adaugă la categoria nouă, goală
                         }
-                        totalLista += pretTotalProdus;
+                        // Dacă e aceeași categorie și e singurul element, nu facem nimic, e deja unde trebuie
+                    } else {
+                        // Drop pe un rând existent, deja gestionat de handleDrop pe rând
+                        return;
                     }
+
+                    if (draggingRow) {
+                        draggingRow.classList.remove('dragging');
+                        draggingRow = null;
+                        originalTableId = null;
+                    }
+
+                    actualizeazaToate();
+                    saveProductsToLocalStorage();
                 });
             });
+        }
 
-            for (const numeProdus in lista) {
-                const item = lista[numeProdus];
-                outputText += `- ${numeProdus}: ${item.cantitate.toFixed(2)} ${item.unitate} (${item.pretTotal.toFixed(2)} RON)\n`;
-                if (item.notite) {
-                    outputText += `  (Notițe: ${item.notite})\n`;
-                }
+
+        // Inițializare la încărcarea paginii
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCategoriesFromLocalStorage(); // Încărcăm categoriile definite de utilizator
+            loadProductsFromLocalStorage(); // Încărcăm produsele cu noua structură
+
+            // Dacă nu există produse salvate, inițializează cu cele implicite
+            if (Object.keys(produse).every(cat => produse[cat].length === 0)) {
+                produse = {
+                    carne: [
+                        { nume: "Mici", cantitate: 2, unitate: "kg", pret: 25, am_acasa: false, notite: "" },
+                        { nume: "Ceafă de porc", cantitate: 1, unitate: "buc", pret: 50, am_acasa: false, notite: "Bucată de 1 kg" },
+                        { nume: "Pulpe dezosate de pui", cantitate: 1.5, unitate: "kg", pret: 16, am_acasa: false, notite: "" },
+                        { nume: "Cârnați de porc", cantitate: 1, unitate: "kg", pret: 18, am_acasa: false, notite: "" }
+                    ],
+                    legume: [
+                        { nume: "Ceapă", cantitate: 0.5, unitate: "kg", pret: 4, am_acasa: false, notite: "" },
+                        { nume: "Ciuperci brune", cantitate: 1, unitate: "caserola", pret: 12, am_acasa: false, notite: "" },
+                        { nume: "Lămâi", cantitate: 3, unitate: "buc", pret: 2, am_acasa: false, notite: "" },
+                        { nume: "Lime", cantitate: 2, unitate: "buc", pret: 3, am_acasa: false, notite: "" },
+                        { nume: "Portocale", cantitate: 1, unitate: "kg", pret: 6, am_acasa: false, notite: "" }
+                    ],
+                    bauturi: [
+                        { nume: "Bere", cantitate: 3, unitate: "bax", pret: 35, am_acasa: false, notite: "" },
+                        { nume: "Bere fără alcool", cantitate: 6, unitate: "buc", pret: 4, am_acasa: false, notite: "" },
+                        { nume: "Cola", cantitate: 1, unitate: "bax", pret: 25, am_acasa: false, notite: "" },
+                        { nume: "Apă (5L)", cantitate: 2, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
+                        { nume: "Rom", cantitate: 1, unitate: "sticla", pret: 35, am_acasa: false, notite: "" }
+                    ],
+                    condimente: [
+                        { nume: "Pâine", cantitate: 4, unitate: "buc", pret: 4, am_acasa: false, notite: "" },
+                        { nume: "Muștar", cantitate: 1, unitate: "borcan", pret: 6, am_acasa: false, notite: "" },
+                        { nume: "Chipsuri/Semințe", cantitate: 3, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
+                        { nume: "Gheață", cantitate: 2, unitate: "kg", pret: 5, am_acasa: false, notite: "" },
+                        { nume: "Carbuni", cantitate: 1, unitate: "sac", pret: 25, am_acasa: false, notite: "" },
+                        { nume: "Farfurii", cantitate: 1, unitate: "set", pret: 15, am_acasa: false, notite: "Set de 50 buc" },
+                        { nume: "Pahare", cantitate: 1, unitate: "set", pret: 12, am_acasa: false, notite: "" },
+                        { nume: "Role bucătărie", cantitate: 1, unitate: "buc", pret: 8, am_acasa: false, notite: "" },
+                        { nume: "Saci gunoi mari", cantitate: 1, unitate: "buc", pret: 12, am_acasa: false, notite: "" }
+                    ]
+                };
+                saveCategoriesToLocalStorage(); // Salvează categoriile implicite
+                saveProductsToLocalStorage(); // Salvează produsele implicite
             }
 
-            outputText += `\n--------------------------------------\n`;
-            outputText += `Total estimat pentru cumpărături: ${totalLista.toFixed(2)} RON\n`;
-            outputText += `--------------------------------------\n`;
 
-            const blob = new Blob([outputText], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            const date = new Date();
-            const filename = `lista_cumparaturi_gratar_${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}.txt`;
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        // Functii pentru Istoric Planuri si CSV
-        const LOCAL_STORAGE_KEY = 'gratar_planuri_salvate';
-
-        function deschideModalSalvarePlan() {
-            document.getElementById('savePlanModal').style.display = 'flex';
-            document.getElementById('planNameInput').value = ''; // Golește inputul
-            document.getElementById('planNameInput').focus(); // Pune focus pe input
-        }
-
-        function inchideModalSalvarePlan() {
-            document.getElementById('savePlanModal').style.display = 'none';
-        }
-
-        function salveazaPlanInLocalStorage() {
-            const planName = document.getElementById('planNameInput').value.trim();
-            if (!planName) {
-                alert('Te rog introdu un nume pentru plan!');
-                return;
-            }
-
-            const savedPlans = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
-            const timestamp = new Date().toISOString();
-
-            const currentPlanState = {
-                name: planName,
-                date: new Date().toLocaleString('ro-RO'),
-                timestamp: timestamp,
-                persoane: parseInt(document.getElementById('persoane').value) || 0,
-                buget: parseFloat(document.getElementById('buget').value) || 0,
-                produse: JSON.parse(JSON.stringify(produse)) // Clonăm obiectul produse
-            };
-
-            savedPlans.push(currentPlanState);
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedPlans));
-            inchideModalSalvarePlan();
+            actualizeazaToate();
             afiseazaPlanuriSalvate();
-            alert(`Planul "${planName}" a fost salvat!`);
-        }
 
-        function afiseazaPlanuriSalvate() {
-            const savedPlans = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
-            const listElement = document.getElementById('savedPlansList');
-            const noPlansMessage = document.getElementById('noPlansMessage');
-            listElement.innerHTML = '';
-
-            if (savedPlans.length === 0) {
-                noPlansMessage.style.display = 'block';
-                return;
-            } else {
-                noPlansMessage.style.display = 'none';
-            }
-
-            savedPlans.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // Sortează de la cel mai nou la cel mai vechi
-
-            savedPlans.forEach((plan, index) => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <span>${plan.name} <br> <small>${plan.date}</small></span>
-                    <div class="history-actions">
-                        <button class="load-btn" onclick="incarcaPlan('${plan.timestamp}')">Încarcă</button>
-                        <button class="download-csv-btn" onclick="exportaPlanCSV('${plan.timestamp}')">Descărcare CSV</button>
-                        <button class="delete-btn" onclick="stergePlan('${plan.timestamp}')">Șterge</button>
-                    </div>
-                `;
-                listElement.appendChild(li);
+            // Atach events for budget and persons inputs
+            document.getElementById('persoane').addEventListener('input', () => {
+                actualizeazaBuget();
+                saveProductsToLocalStorage(); // Save changes to budget/persons input
             });
-        }
-
-        function incarcaPlan(timestamp) {
-            const savedPlans = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
-            const planToLoad = savedPlans.find(p => p.timestamp === timestamp);
-
-            if (planToLoad && confirm(`Sigur vrei să încarci planul "${planToLoad.name}"? Modificările curente nesalvate se vor pierde.`)) {
-                document.getElementById('persoane').value = planToLoad.persoane;
-                document.getElementById('buget').value = planToLoad.buget;
-                produse = JSON.parse(JSON.stringify(planToLoad.produse)); // Reîncarcă produsele
-                actualizeazaToate();
-                alert(`Planul "${planToLoad.name}" a fost încărcat!`);
-            }
-        }
-
-        function stergePlan(timestamp) {
-            if (confirm('Sigur vrei să ștergi acest plan din istoric?')) {
-                let savedPlans = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
-                savedPlans = savedPlans.filter(p => p.timestamp !== timestamp);
-                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedPlans));
-                afiseazaPlanuriSalvate();
-                alert('Plan șters din istoric.');
-            }
-        }
-
-        // Funcția care generează conținutul CSV
-        function generateCSVContent(planData) {
-            let csvContent = "";
-
-            // Antetul CSV
-            const headers = ["Categorie", "Produs", "Cantitate", "Unitate", "Pret/Unitate (RON)", "Am Acasa", "Notite", "Total (RON)"];
-            csvContent += headers.join(",") + "\n"; // Folosim virgula ca separator
-
-            // Adaugă datele pentru fiecare categorie
-            for (const category in planData.produse) {
-                planData.produse[category].forEach(produs => {
-                    const totalProdus = (produs.cantitate * produs.pret).toFixed(2);
-                    const row = [
-                        category,
-                        `"${produs.nume.replace(/"/g, '""')}"`, // Înlocuiește ghilimelele duble cu două ghilimele duble pentru a le escapa
-                        produs.cantitate,
-                        produs.unitate,
-                        produs.pret,
-                        produs.am_acasa ? "Da" : "Nu",
-                        `"${produs.notite.replace(/"/g, '""')}"`,
-                        totalProdus
-                    ];
-                    csvContent += row.join(",") + "\n";
-                });
-            }
-
-            // Adaugă sumarul bugetului la final (opțional, dar util)
-            csvContent += "\n\n";
-            csvContent += "Sumar Buget\n";
-            csvContent += `Numar persoane:,${planData.persoane}\n`;
-            csvContent += `Buget total:,${planData.buget.toFixed(2)} RON\n`;
-            const totalCheltuieli = Object.values(planData.produse).flat().reduce((sum, p) => sum + (p.am_acasa ? 0 : p.cantitate * p.pret), 0);
-            csvContent += `Total cheltuieli (est. necesar):,${totalCheltuieli.toFixed(2)} RON\n`;
-            csvContent += `Bani ramasi:,${(planData.buget - totalCheltuieli).toFixed(2)} RON\n`;
-
-            return csvContent;
-        }
-
-        // Funcția pentru exportul planului curent în CSV
-        function exportaPlanCurentCSV() {
-            const currentPlanState = {
-                name: "Plan Curent", // Nume generic pentru exportul curent
-                date: new Date().toLocaleString('ro-RO'),
-                persoane: parseInt(document.getElementById('persoane').value) || 0,
-                buget: parseFloat(document.getElementById('buget').value) || 0,
-                produse: JSON.parse(JSON.stringify(produse))
-            };
-            const csv = generateCSVContent(currentPlanState);
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            const date = new Date();
-            const filename = `plan_gratar_curent_${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}.csv`;
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            alert('Planul curent a fost exportat în CSV!');
-        }
-
-        // Funcția pentru exportul unui plan din istoric în CSV
-        function exportaPlanCSV(timestamp) {
-            const savedPlans = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
-            const planToExport = savedPlans.find(p => p.timestamp === timestamp);
-
-            if (planToExport) {
-                const csv = generateCSVContent(planToExport);
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                const filename = `plan_gratar_${planToExport.name.replace(/[^a-z0-9]/gi, '_')}_${new Date(planToExport.timestamp).toLocaleDateString('ro-RO').replace(/\./g, '-')}.csv`;
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                alert(`Planul "${planToExport.name}" a fost exportat în CSV!`);
-            } else {
-                alert('Eroare: Planul nu a fost găsit în istoric.');
-            }
-        }
-
-
-        // Event listeners
-        document.getElementById('persoane').addEventListener('input', actualizeazaBuget);
-        document.getElementById('buget').addEventListener('input', actualizeazaBuget);
-
-        // Inițializare
-        actualizeazaToate();
-        afiseazaPlanuriSalvate(); // Afișează planurile salvate la încărcarea paginii
+            document.getElementById('buget').addEventListener('input', () => {
+                actualizeazaBuget();
+                saveProductsToLocalStorage(); // Save changes to budget/persons input
+            });
+        });
     </script>
 </body>
 </html>
